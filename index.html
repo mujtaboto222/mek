@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<title>Ancient Makkah — Walk Through History</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#d4a843;--gold-l:#f0c96a;--sand:#e8d5b0;--sand-d:#c4a96a;--night:#0d0a06;--dim:#a08060;--white:#faf6ee;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--night);font-family:'Crimson Text',serif;color:var(--white);}
+canvas#c{width:100%;height:100%;display:block;touch-action:none;outline:none;}
+
+/* LOADING */
+#ld{position:fixed;inset:0;z-index:1000;background:var(--night);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1s;}
+#ld.out{opacity:0;pointer-events:none;}
+.ld-t{font-family:'Cinzel',serif;font-size:clamp(1.8rem,4vw,3rem);color:var(--gold);letter-spacing:.15em;margin-bottom:.3em;}
+.ld-s{font-size:.82rem;color:var(--dim);letter-spacing:.35em;text-transform:uppercase;margin-bottom:2.2rem;}
+.ld-bw{width:220px;height:1px;background:rgba(255,255,255,.08);margin-bottom:1rem;}
+.ld-b{height:100%;width:0;background:linear-gradient(90deg,#8b5e3c,var(--gold));transition:width .2s;}
+.ld-m{font-size:.75rem;color:var(--dim);letter-spacing:.08em;}
+
+/* INTRO */
+#intro{position:fixed;inset:0;z-index:900;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 55%,rgba(139,94,60,.18),rgba(13,10,6,.97) 65%);opacity:0;pointer-events:none;transition:opacity .6s;}
+#intro.on{opacity:1;pointer-events:all;}
+.i-rule{width:70px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto 1.8rem;}
+.i-t{font-family:'Cinzel',serif;font-size:clamp(2rem,5vw,3.8rem);font-weight:700;color:var(--gold-l);text-align:center;line-height:1.1;margin-bottom:.3em;}
+.i-s{font-size:1.05rem;color:var(--sand);font-style:italic;text-align:center;margin-bottom:.4em;}
+.i-e{font-family:'Cinzel',serif;font-size:.68rem;color:var(--dim);letter-spacing:.35em;text-transform:uppercase;margin-bottom:2.5rem;}
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:.65rem 2.2rem;margin-bottom:2.8rem;}
+.ci{display:flex;align-items:center;gap:.55rem;font-size:.85rem;color:var(--sand);}
+.ck{background:rgba(255,255,255,.07);border:1px solid rgba(212,168,67,.3);border-radius:3px;padding:2px 7px;font-family:'Cinzel',serif;font-size:.68rem;color:var(--gold);min-width:32px;text-align:center;}
+.eb{font-family:'Cinzel',serif;font-size:.82rem;letter-spacing:.28em;text-transform:uppercase;color:var(--night);background:linear-gradient(135deg,var(--gold),var(--sand-d));border:none;padding:.9rem 3rem;cursor:pointer;border-radius:2px;transition:transform .22s,box-shadow .22s;}
+.eb:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(212,168,67,.4);}
+
+/* HUD */
+#hud{position:fixed;inset:0;pointer-events:none;z-index:100;}
+.compass{position:absolute;top:1.4rem;right:1.4rem;width:58px;height:58px;}
+.co{width:100%;height:100%;border:1px solid rgba(212,168,67,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;background:rgba(13,10,6,.55);}
+.cn{font-family:'Cinzel',serif;font-size:.55rem;color:var(--gold);position:absolute;top:4px;left:50%;transform:translateX(-50%);}
+.cs{font-family:'Cinzel',serif;font-size:.55rem;color:var(--dim);position:absolute;bottom:4px;left:50%;transform:translateX(-50%);}
+.cneedle{width:2px;height:20px;border-radius:1px;background:linear-gradient(to bottom,var(--gold) 50%,rgba(255,255,255,.2) 50%);transition:transform .12s;transform-origin:center center;}
+.loc{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);opacity:0;transition:opacity .4s;text-shadow:0 0 20px rgba(212,168,67,.5);white-space:nowrap;}
+.loc.on{opacity:1;}
+.hint{position:absolute;bottom:1.2rem;right:1.4rem;font-size:.68rem;color:var(--dim);text-align:right;line-height:2;pointer-events:all;}
+.hint b{color:var(--sand);font-weight:400;}
+
+/* PANEL */
+#panel{position:fixed;top:0;right:-430px;width:410px;height:100%;background:linear-gradient(160deg,#14100a,#0d0a06);border-left:1px solid rgba(212,168,67,.18);z-index:200;overflow-y:auto;pointer-events:all;transition:right .45s cubic-bezier(.4,0,.2,1);}
+#panel.open{right:0;}
+@media(max-width:500px){#panel{width:100%;right:-100%;}}
+.ph{height:120px;position:relative;overflow:hidden;background:linear-gradient(135deg,#3d2010,#1a0e06);}
+.ph-glow{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(212,168,67,.2),transparent 70%);}
+.pc{position:absolute;top:.9rem;right:.9rem;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.15);border-radius:50%;color:var(--dim);width:26px;height:26px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.pc:hover{color:var(--gold);border-color:var(--gold);}
+.pb{padding:1.6rem;}
+.p-cat{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.35em;color:var(--gold);text-transform:uppercase;margin-bottom:.45rem;opacity:.8;}
+.p-tit{font-family:'Cinzel',serif;font-size:1.75rem;font-weight:700;color:var(--white);line-height:1.1;margin-bottom:.22rem;}
+.p-ar{font-size:1.2rem;color:var(--sand-d);font-style:italic;direction:rtl;margin-bottom:1.1rem;}
+.p-rl{width:32px;height:1px;background:linear-gradient(90deg,var(--gold),transparent);margin-bottom:1.3rem;}
+.p-sec{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:1.4rem 0 .55rem;opacity:.75;}
+.p-tx{font-size:.95rem;line-height:1.8;color:var(--sand);}
+.p-tags{display:flex;flex-wrap:wrap;gap:.38rem;margin-top:.35rem;}
+.p-tag{font-size:.68rem;padding:.25rem .65rem;border:1px solid rgba(212,168,67,.28);border-radius:2px;color:var(--sand-d);font-family:'Cinzel',serif;}
+.p-fig{margin-top:.7rem;padding:.85rem 1rem;background:rgba(255,255,255,.025);border-left:2px solid var(--gold);border-radius:0 3px 3px 0;}
+.p-fn{font-family:'Cinzel',serif;font-size:.78rem;color:var(--gold-l);margin-bottom:.2rem;}
+.p-fd{font-size:.85rem;color:var(--dim);line-height:1.5;font-style:italic;}
+
+/* LABELS */
+.wl{position:fixed;pointer-events:all;cursor:pointer;transform:translate(-50%,-100%);opacity:0;transition:opacity .25s;}
+.wl.vis{opacity:1;}
+.wlb{background:rgba(10,7,4,.8);border:1px solid rgba(212,168,67,.5);border-radius:3px;padding:.3rem .68rem;white-space:nowrap;position:relative;}
+.wlb::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid rgba(212,168,67,.5);}
+.wl:hover .wlb{background:rgba(212,168,67,.12);border-color:var(--gold);}
+.wln{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.13em;color:var(--gold-l);text-transform:uppercase;}
+.wls{font-size:.6rem;color:var(--dim);text-align:center;margin-top:1px;font-style:italic;}
+
+/* MINIMAP */
+#mm{position:fixed;bottom:1.3rem;left:1.3rem;width:130px;height:130px;border:1px solid rgba(212,168,67,.28);border-radius:3px;background:rgba(10,7,4,.85);z-index:150;overflow:hidden;}
+.mm-l{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);font-family:'Cinzel',serif;font-size:.48rem;color:var(--dim);letter-spacing:.15em;text-transform:uppercase;}
+
+#panel::-webkit-scrollbar{width:3px;}
+#panel::-webkit-scrollbar-thumb{background:rgba(212,168,67,.22);border-radius:2px;}
+</style>
+</head>
+<body>
+
+<div id="ld">
+  <div class="ld-t">Ancient Makkah</div>
+  <div class="ld-s">Before the Revelation</div>
+  <div class="ld-bw"><div class="ld-b" id="ldBar"></div></div>
+  <div class="ld-m" id="ldMsg">Preparing…</div>
+</div>
+
+<div id="intro">
+  <div class="i-rule"></div>
+  <div class="i-t">Ancient Makkah</div>
+  <div class="i-s">Walk through the city as it stood before Islam</div>
+  <div class="i-e">circa 500 – 610 CE · Arabian Peninsula</div>
+  <div class="cg">
+    <div class="ci"><span class="ck">Drag</span>Rotate view</div>
+    <div class="ci"><span class="ck">Scroll</span>Zoom in/out</div>
+    <div class="ci"><span class="ck">Click label</span>Clan info</div>
+    <div class="ci"><span class="ck">✕</span>Close panel</div>
+  </div>
+  <button class="eb" id="enterBtn">Enter the City</button>
+</div>
+
+<canvas id="c"></canvas>
+
+<div id="hud">
+  <div class="compass"><div class="co"><div class="cn">N</div><div class="cs">S</div><div class="cneedle" id="needle"></div></div></div>
+  <div class="loc" id="loc"></div>
+  <div class="hint"><b>Drag</b> to rotate · <b>Scroll</b> to zoom<br><b>Click</b> a label to explore</div>
+</div>
+
+<div id="panel">
+  <div class="ph"><div class="ph-glow"></div><button class="pc" id="pClose">✕</button></div>
+  <div class="pb">
+    <div class="p-cat" id="pCat"></div>
+    <div class="p-tit" id="pTit"></div>
+    <div class="p-ar" id="pAr"></div>
+    <div class="p-rl"></div>
+    <p class="p-tx" id="pDesc"></p>
+    <div class="p-sec">Territory &amp; Influence</div>
+    <div class="p-tags" id="pTags"></div>
+    <div class="p-sec">Notable Figures</div>
+    <div id="pFigs"></div>
+    <div class="p-sec">Historical Role</div>
+    <p class="p-tx" id="pRole"></p>
+  </div>
+</div>
+
+<div id="mm"><canvas id="mmC" width="130" height="130"></canvas><div class="mm-l">Overview</div></div>
+
+<script src="https://cdn.babylonjs.com/babylon.js"></script>
+<script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+<script>
+"use strict";
+
+// ── CLAN DATA ──
+var CLANS={
+  kaaba:{cat:"Sacred Centre",name:"Al-Kaaba",arabic:"\u0627\u0644\u0643\u0639\u0628\u0629 \u0627\u0644\u0645\u0634\u0631\u0641\u0629",desc:"The ancient cubic structure at the heart of Makkah. Long before Islam, pilgrims from every Arabian tribe journeyed here annually. The city\u2019s entire existence revolved around its role as custodian of this sanctuary.",tags:["Sacred Sanctuary","Pilgrimage Centre","Black Stone","Ibrahim\u2019s Legacy"],figs:[{n:"Qusay ibn Kilab",d:"United the Quraysh clans around 400 CE and established the custodianship system."},{n:"Abd al-Muttalib",d:"Grandfather of the Prophet \u0635\u0644\u0649 \u0627\u0644\u0644\u0647 \u0639\u0644\u064a\u0647 \u0648\u0633\u0644\u0645; keeper of the Kaaba who rediscovered Zamzam."}],role:"The Kaaba was the axis around which all Arabian tribal life revolved. Whoever controlled it controlled pilgrimage trade, diplomacy and spiritual loyalty."},
+  banu_hashim:{cat:"Noble Clan \u00b7 Quraysh",name:"Ban\u016b H\u0101shim",arabic:"\u0628\u0646\u0648 \u0647\u0627\u0634\u0645",desc:"The most honoured clan of the Quraysh, entrusted with providing water to pilgrims from the sacred Zamzam well. Their quarter lay directly adjacent to the Kaaba.",tags:["Zamzam Custodians","Water Bearers","Rifada Duty","Inner Haram"],figs:[{n:"H\u0101shim ibn Abd Man\u0101f",d:"Pioneered the two great trade caravans \u2014 Syria in summer, Yemen in winter."},{n:"Abd al-Mu\u1e6d\u1e6dalib",d:"Rediscovered Zamzam after centuries of burial, cementing the clan\u2019s sacred authority."}],role:"Banu Hashim held the twin sacred offices of Siqaya and Rifada \u2014 the holiest duties in Makkah."},
+  banu_makhzum:{cat:"Warrior Clan \u00b7 Quraysh",name:"Ban\u016b Makhz\u016bm",arabic:"\u0628\u0646\u0648 \u0645\u062e\u0632\u0648\u0645",desc:"The preeminent military clan of the Quraysh, commanding the trade routes from the coastal Tihama region. Their warriors were feared across the Hijaz.",tags:["Military Dominance","Western District","Tihama Route","War Council"],figs:[{n:"Amr ibn Hish\u0101m (Ab\u016b Jahl)",d:"The most authoritative political voice of the clan."},{n:"Kh\u0101lid ibn al-Wal\u012bd",d:"Born of this clan, he became the most gifted military commander of his era."}],role:"Banu Makhzum controlled Makkah\u2019s military apparatus and the western commercial corridor."},
+  banu_umayya:{cat:"Political Clan \u00b7 Quraysh",name:"Ban\u016b Umayya",arabic:"\u0628\u0646\u0648 \u0623\u0645\u064a\u0629",desc:"The great rivals of Banu Hashim. Masters of mercantile politics and long-distance trade, they dominated Makkah\u2019s commercial life from the eastern districts.",tags:["Commercial Power","Eastern District","Syrian Trade","Political Brokers"],figs:[{n:"Ab\u016b Sufy\u0101n ibn \u1e24arb",d:"Supreme commander of Qurayshi trade caravans."},{n:"Uthm\u0101n ibn Aff\u0101n",d:"A wealthy merchant who became the third Caliph of Islam."}],role:"Banu Umayya\u2019s wealth came from mastery of the Syrian trade route. Their rivalry with Banu Hashim defined Qurayshi politics for generations."},
+  banu_zuhra:{cat:"Merchant Clan \u00b7 Quraysh",name:"Ban\u016b Zuhra",arabic:"\u0628\u0646\u0648 \u0632\u0647\u0631\u0629",desc:"A respected Qurayshi clan of scholars, diplomats and merchants occupying the northern quarters. Known for the incense trade from Yemen.",tags:["Northern District","Incense Trade","Diplomatic Clan","Yemeni Route"],figs:[{n:"\u0100mina bint Wahb",d:"Mother of the Prophet Muhammad \u0635\u0644\u0649 \u0627\u0644\u0644\u0647 \u0639\u0644\u064a\u0647 \u0648\u0633\u0644\u0645."},{n:"Abd al-Ra\u1e25m\u0101n ibn Awf",d:"One of the wealthiest companions of the Prophet \u0635\u0644\u0649 \u0627\u0644\u0644\u0647 \u0639\u0644\u064a\u0647 \u0648\u0633\u0644\u0645."}],role:"Banu Zuhra\u2019s mastery of the Yemeni incense route brought frankincense and myrrh that perfumed the entire city."},
+  zamzam:{cat:"Sacred Site",name:"Bi\u2019r Zamzam",arabic:"\u0628\u0626\u0631 \u0632\u0645\u0632\u0645",desc:"The sacred well of Makkah, believed to have miraculously appeared for H\u0101jar and her infant son Ism\u0101\u2019\u012bl.",tags:["Sacred Well","Blessed Water","Pilgrim Provision"],figs:[{n:"H\u0101jar",d:"Her search for water between Safa and Marwa is commemorated in Hajj rites to this day."},{n:"Abd al-Mu\u1e6d\u1e6dalib",d:"Rediscovered Zamzam following a divine dream."}],role:"Zamzam was the foundation of Makkah\u2019s existence. Without it the valley could not sustain settlement."},
+  suq_makkah:{cat:"Trade District",name:"S\u016bq Makkah",arabic:"\u0633\u0648\u0642 \u0645\u0643\u0629",desc:"The markets of ancient Makkah ranked among the most important commercial hubs on the Arabian Peninsula.",tags:["Incense Route","Annual Fair","Arabian Commerce","Caravan Hub"],figs:[{n:"H\u0101shim ibn Abd Man\u0101f",d:"Established the two-caravan system that anchored Makkah\u2019s commercial supremacy."}],role:"The market\u2019s genius was its dual foundation: religious authority brought pilgrims, and Qurayshi trade networks let them trade in safety."}
+};
+
+var ZONES=[
+  {id:"kaaba",       x:0,   z:0,  r:12, ly:14},
+  {id:"banu_hashim", x:-18, z:-18,r:18, ly:7},
+  {id:"banu_makhzum",x:-38, z:10, r:20, ly:7},
+  {id:"banu_umayya", x:36,  z:-14,r:20, ly:7},
+  {id:"banu_zuhra",  x:10,  z:40, r:18, ly:7},
+  {id:"zamzam",      x:7,   z:3,  r:6,  ly:10},
+  {id:"suq_makkah",  x:28,  z:26, r:16, ly:7}
+];
+
+// ── ENGINE ──
+var canvas = document.getElementById("c");
+var engine = new BABYLON.Engine(canvas, true, {adaptToDeviceRatio:false});
+var scene  = new BABYLON.Scene(engine);
+scene.clearColor = new BABYLON.Color4(0.58, 0.42, 0.24, 1);
+scene.skipPointerMovePicking = true;
+
+// ── CAMERA — orbital ──
+var cam = new BABYLON.ArcRotateCamera("cam", -Math.PI/2, Math.PI/3.2, 115, BABYLON.Vector3.Zero(), scene);
+cam.minZ=0.5; cam.maxZ=500;
+cam.lowerRadiusLimit=55; cam.upperRadiusLimit=180;
+cam.lowerBetaLimit=0.25; cam.upperBetaLimit=Math.PI/2.05;
+cam.wheelPrecision=8; cam.panningSensibility=0;
+cam.angularSensibilityX=600; cam.angularSensibilityY=600;
+cam.inertia=0.55;
+
+// ── LIGHTING — golden hour ──
+var sun = new BABYLON.DirectionalLight("sun", new BABYLON.Vector3(-0.4,-0.6,0.2), scene);
+sun.intensity=2.8; sun.diffuse=new BABYLON.Color3(1,0.76,0.38); sun.specular=new BABYLON.Color3(0.4,0.25,0.1);
+
+var sg = new BABYLON.ShadowGenerator(512, sun);
+sg.usePoissonSampling=true; sg.setDarkness(0.45);
+
+var hemi = new BABYLON.HemisphericLight("h", new BABYLON.Vector3(0,1,0), scene);
+hemi.intensity=0.65; hemi.diffuse=new BABYLON.Color3(0.85,0.65,0.42); hemi.groundColor=new BABYLON.Color3(0.5,0.32,0.18);
+
+// ── SKY ──
+(function(){
+  var sky = BABYLON.MeshBuilder.CreateSphere("sky",{diameter:580,sideOrientation:BABYLON.Mesh.BACKSIDE,segments:8},scene);
+  var m = new BABYLON.StandardMaterial("sm",scene); m.disableLighting=true; m.backFaceCulling=false;
+  var dt = new BABYLON.DynamicTexture("st",{width:256,height:256},scene,false);
+  var ctx = dt.getContext();
+  var g = ctx.createLinearGradient(0,256,0,0);
+  g.addColorStop(0,"#c04008"); g.addColorStop(0.15,"#d85818"); g.addColorStop(0.35,"#a03820");
+  g.addColorStop(0.55,"#6a2830"); g.addColorStop(0.8,"#2e1428"); g.addColorStop(1,"#160820");
+  ctx.fillStyle=g; ctx.fillRect(0,0,256,256);
+  var sg2 = ctx.createRadialGradient(60,230,0,60,230,80);
+  sg2.addColorStop(0,"rgba(255,210,90,1)"); sg2.addColorStop(0.3,"rgba(255,140,30,.8)"); sg2.addColorStop(1,"rgba(255,60,0,0)");
+  ctx.fillStyle=sg2; ctx.fillRect(0,0,256,256);
+  dt.update(); m.emissiveTexture=dt; sky.material=m; sky.isPickable=false;
+})();
+
+// ── FOG ──
+scene.fogMode=BABYLON.Scene.FOGMODE_LINEAR;
+scene.fogColor=new BABYLON.Color3(0.68,0.48,0.28);
+scene.fogStart=80; scene.fogEnd=250;
+
+// ── POST-PROCESS ──
+var pp = new BABYLON.DefaultRenderingPipeline("pp",false,scene,[cam]);
+pp.fxaaEnabled=true;
+pp.bloomEnabled=true; pp.bloomThreshold=0.7; pp.bloomWeight=0.22; pp.bloomKernel=32;
+pp.imageProcessingEnabled=true;
+pp.imageProcessing.contrast=1.1; pp.imageProcessing.exposure=1.08;
+pp.imageProcessing.vignetteEnabled=true; pp.imageProcessing.vignetteWeight=1.8;
+
+// ── LOAD GLB ──
+// Load external GLB file (must be in same folder as index.html)
+BABYLON.SceneLoader.ImportMesh("", "./", "scene.glb", scene,
+  function(meshes) {
+    console.log("GLB loaded:", meshes.length, "meshes");
+    meshes.forEach(function(m) {
+      m.receiveShadows = true;
+      try { sg.addShadowCaster(m, true); } catch(e) {}
+    });
+  },
+  null,
+  function(sc, msg, ex) {
+    console.error("GLB error:", msg, ex);
+  }
+);tml>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<title>Ancient Makkah — Walk Through History</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#d4a843;--gold-l:#f0c96a;--sand:#e8d5b0;--sand-d:#c4a96a;--night:#0d0a06;--dim:#a08060;--white:#faf6ee;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--night);font-family:'Crimson Text',serif;color:var(--white);}
+canvas#c{width:100%;height:100%;display:block;touch-action:none;outline:none;}
+
+/* LOADING */
+#ld{position:fixed;inset:0;z-index:1000;background:var(--night);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1s;}
+#ld.out{opacity:0;pointer-events:none;}
+.ld-t{font-family:'Cinzel',serif;font-size:clamp(1.8rem,4vw,3rem);color:var(--gold);letter-spacing:.15em;margin-bottom:.3em;}
+.ld-s{font-size:.82rem;color:var(--dim);letter-spacing:.35em;text-transform:uppercase;margin-bottom:2.2rem;}
+.ld-bw{width:220px;height:1px;background:rgba(255,255,255,.08);margin-bottom:1rem;}
+.ld-b{height:100%;width:0;background:linear-gradient(90deg,#8b5e3c,var(--gold));transition:width .2s;}
+.ld-m{font-size:.75rem;color:var(--dim);letter-spacing:.08em;}
+
+/* INTRO */
+#intro{position:fixed;inset:0;z-index:900;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 55%,rgba(139,94,60,.18),rgba(13,10,6,.97) 65%);opacity:0;pointer-events:none;transition:opacity .6s;}
+#intro.on{opacity:1;pointer-events:all;}
+.i-rule{width:70px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto 1.8rem;}
+.i-t{font-family:'Cinzel',serif;font-size:clamp(2rem,5vw,3.8rem);font-weight:700;color:var(--gold-l);text-align:center;line-height:1.1;margin-bottom:.3em;}
+.i-s{font-size:1.05rem;color:var(--sand);font-style:italic;text-align:center;margin-bottom:.4em;}
+.i-e{font-family:'Cinzel',serif;font-size:.68rem;color:var(--dim);letter-spacing:.35em;text-transform:uppercase;margin-bottom:2.5rem;}
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:.65rem 2.2rem;margin-bottom:2.8rem;}
+.ci{display:flex;align-items:center;gap:.55rem;font-size:.85rem;color:var(--sand);}
+.ck{background:rgba(255,255,255,.07);border:1px solid rgba(212,168,67,.3);border-radius:3px;padding:2px 7px;font-family:'Cinzel',serif;font-size:.68rem;color:var(--gold);min-width:32px;text-align:center;}
+.eb{font-family:'Cinzel',serif;font-size:.82rem;letter-spacing:.28em;text-transform:uppercase;color:var(--night);background:linear-gradient(135deg,var(--gold),var(--sand-d));border:none;padding:.9rem 3rem;cursor:pointer;border-radius:2px;transition:transform .22s,box-shadow .22s;}
+.eb:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(212,168,67,.4);}
+
+/* HUD */
+#hud{position:fixed;inset:0;pointer-events:none;z-index:100;}
+.compass{position:absolute;top:1.4rem;right:1.4rem;width:58px;height:58px;}
+.co{width:100%;height:100%;border:1px solid rgba(212,168,67,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;background:rgba(13,10,6,.55);}
+.cn{font-family:'Cinzel',serif;font-size:.55rem;color:var(--gold);position:absolute;top:4px;left:50%;transform:translateX(-50%);}
+.cs{font-family:'Cinzel',serif;font-size:.55rem;color:var(--dim);position:absolute;bottom:4px;left:50%;transform:translateX(-50%);}
+.cneedle{width:2px;height:20px;border-radius:1px;background:linear-gradient(to bottom,var(--gold) 50%,rgba(255,255,255,.2) 50%);transition:transform .12s;transform-origin:center center;}
+.loc{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);opacity:0;transition:opacity .4s;text-shadow:0 0 20px rgba(212,168,67,.5);white-space:nowrap;}
+.loc.on{opacity:1;}
+.hint{position:absolute;bottom:1.2rem;right:1.4rem;font-size:.68rem;color:var(--dim);text-align:right;line-height:2;pointer-events:all;}
+.hint b{color:var(--sand);font-weight:400;}
+
+/* PANEL */
+#panel{position:fixed;top:0;right:-430px;width:410px;height:100%;background:linear-gradient(160deg,#14100a,#0d0a06);border-left:1px solid rgba(212,168,67,.18);z-index:200;overflow-y:auto;pointer-events:all;transition:right .45s cubic-bezier(.4,0,.2,1);}
+#panel.open{right:0;}
+@media(max-width:500px){#panel{width:100%;right:-100%;}}
+.ph{height:120px;position:relative;overflow:hidden;background:linear-gradient(135deg,#3d2010,#1a0e06);}
+.ph-glow{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(212,168,67,.2),transparent 70%);}
+.pc{position:absolute;top:.9rem;right:.9rem;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.15);border-radius:50%;color:var(--dim);width:26px;height:26px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.pc:hover{color:var(--gold);border-color:var(--gold);}
+.pb{padding:1.6rem;}
+.p-cat{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.35em;color:var(--gold);text-transform:uppercase;margin-bottom:.45rem;opacity:.8;}
+.p-tit{font-family:'Cinzel',serif;font-size:1.75rem;font-weight:700;color:var(--white);line-height:1.1;margin-bottom:.22rem;}
+.p-ar{font-size:1.2rem;color:var(--sand-d);font-style:italic;direction:rtl;margin-bottom:1.1rem;}
+.p-rl{width:32px;height:1px;background:linear-gradient(90deg,var(--gold),transparent);margin-bottom:1.3rem;}
+.p-sec{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:1.4rem 0 .55rem;opacity:.75;}
+.p-tx{font-size:.95rem;line-height:1.8;color:var(--sand);}
+.p-tags{display:flex;flex-wrap:wrap;gap:.38rem;margin-top:.35rem;}
+.p-tag{font-size:.68rem;padding:.25rem .65rem;border:1px solid rgba(212,168,67,.28);border-radius:2px;color:var(--sand-d);font-family:'Cinzel',serif;}
+.p-fig{margin-top:.7rem;padding:.85rem 1rem;background:rgba(255,255,255,.025);border-left:2px solid var(--gold);border-radius:0 3px 3px 0;}
+.p-fn{font-family:'Cinzel',serif;font-size:.78rem;color:var(--gold-l);margin-bottom:.2rem;}
+.p-fd{font-size:.85rem;color:var(--dim);line-height:1.5;font-style:italic;}
+
+/* LABELS */
+.wl{position:fixed;pointer-events:all;cursor:pointer;transform:translate(-50%,-100%);opacity:0;transition:opacity .25s;}
+.wl.vis{opacity:1;}
+.wlb{background:rgba(10,7,4,.8);border:1px solid rgba(212,168,67,.5);border-radius:3px;padding:.3rem .68rem;white-space:nowrap;position:relative;}
+.wlb::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid rgba(212,168,67,.5);}
+.wl:hover .wlb{background:rgba(212,168,67,.12);border-color:var(--gold);}
+.wln{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.13em;color:var(--gold-l);text-transform:uppercase;}
+.wls{font-size:.6rem;color:var(--dim);text-align:center;margin-top:1px;font-style:italic;}
+
+/* MINIMAP */
+#mm{position:fixed;bottom:1.3rem;left:1.3rem;width:130px;height:130px;border:1px solid rgba(212,168,67,.28);border-radius:3px;background:rgba(10,7,4,.85);z-index:150;overflow:hidden;}
+.mm-l{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);font-family:'Cinzel',serif;font-size:.48rem;color:var(--dim);letter-spacing:.15em;text-transform:uppercase;}
+
+#panel::-webkit-scrollbar{width:3px;}
+#panel::-webkit-scrollbar-thumb{background:rgba(212,168,67,.22);border-radius:2px;}
+</style>
+</head>
+<body>
+
+<div id="ld">
+  <div class="ld-t">Ancient Makkah</div>
+  <div class="ld-s">Before the Revelation</div>
+  <div class="ld-bw"><div class="ld-b" id="ldBar"></div></div>
+  <div class="ld-m" id="ldMsg">Preparing…</div>
+</div>
+
+<div id="intro">
+  <div class="i-rule"></div>
+  <div class="i-t">Ancient Makkah</div>
+  <div class="i-s">Walk through the city as it stood before Islam</div>
+  <div class="i-e">circa 500 – 610 CE · Arabian Peninsula</div>
+  <div class="cg">
+    <div class="ci"><span class="ck">Drag</span>Rotate view</div>
+    <div class="ci"><span class="ck">Scroll</span>Zoom in/out</div>
+    <div class="ci"><span class="ck">Click label</span>Clan info</div>
+    <div class="ci"><span class="ck">✕</span>Close panel</div>
+  </div>
+  <button class="eb" id="enterBtn">Enter the City</button>
+</div>
+
+<canvas id="c"></canvas>
+
+<div id="hud">
+  <div class="compass"><div class="co"><div class="cn">N</div><div class="cs">S</div><div class="cneedle" id="needle"></div></div></div>
+  <div class="loc" id="loc"></div>
+  <div class="hint"><b>Drag</b> to rotate · <b>Scroll</b> to zoom<br><b>Click</b> a label to explore</div>
+</div>
+
+<div id="panel">
+  <div class="ph"><div class="ph-glow"></div><button class="pc" id="pClose">✕</button></div>
+  <div class="pb">
+    <div class="p-cat" id="pCat"></div>
+    <div class="p-tit" id="pTit"></div>
+    <div class="p-ar" id="pAr"></div>
+    <div class="p-rl"></div>
+    <p class="p-tx" id="pDesc"></p>
+    <div class="p-sec">Territory &amp; Influence</div>
+    <div class="p-tags" id="pTags"></div>
+    <div class="p-sec">Notable Figures</div>
+    <div id="pFigs"></div>
+    <div class="p-sec">Historical Role</div>
+    <p class="p-tx" id="pRole"></p>
+  </div>
+</div>
+
+<div id="mm"><canvas id="mmC" width="130" height="130"></canvas><div class="mm-l">Overview</div></div>
+
+<script src="https://cdn.babylonjs.com/babylon.js"></script>
+<script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+<script>
+"use strict";
+
+// ── CLAN DATA ──
+var CLANS={
+  kaaba:{cat:"Sacred Centre",name:"Al-Kaaba",arabic:"\u0627\u0644\u0643\u0639\u0628\u0629 \u0627\u0644\u0645\u0634\u0631\u0641\u0629",desc:"The ancient cubic structure at the heart of Makkah. Long before Islam, pilgrims from every Arabian tribe journeyed here annually. The city\u2019s entire existence revolved around its role as custodian of this sanctuary.",tags:["Sacred Sanctuary","Pilgrimage Centre","Black Stone","Ibrahim\u2019s Legacy"],figs:[{n:"Qusay ibn Kilab",d:"United the Quraysh clans around 400 CE and established the custodianship system."},{n:"Abd al-Muttalib",d:"Grandfather of the Prophet \u0635\u0644\u0649 \u0627\u0644\u0644\u0647 \u0639\u0644\u064a\u0647 \u0648\u0633\u0644\u0645; keeper of the Kaaba who rediscovered Zamzam."}],role:"The Kaaba was the axis around which all Arabian tribal life revolved. Whoever controlled it controlled pilgrimage trade, diplomacy and spiritual loyalty."},
+  banu_hashim:{cat:"Noble Clan \u00b7 Quraysh",name:"Ban\u016b H\u0101shim",arabic:"\u0628\u0646\u0648 \u0647\u0627\u0634\u0645",desc:"The most honoured clan of the Quraysh, entrusted with providing water to pilgrims from the sacred Zamzam well. Their quarter lay directly adjacent to the Kaaba.",tags:["Zamzam Custodians","Water Bearers","Rifada Duty","Inner Haram"],figs:[{n:"H\u0101shim ibn Abd Man\u0101f",d:"Pioneered the two great trade caravans \u2014 Syria in summer, Yemen in winter."},{n:"Abd al-Mu\u1e6d\u1e6dalib",d:"Rediscovered Zamzam after centuries of burial, cementing the clan\u2019s sacred authority."}],role:"Banu Hashim held the twin sacred offices of Siqaya and Rifada \u2014 the holiest duties in Makkah."},
+  banu_makhzum:{cat:"Warrior Clan \u00b7 Quraysh",name:"Ban\u016b Makhz\u016bm",arabic:"\u0628\u0646\u0648 \u0645\u062e\u0632\u0648\u0645",desc:"The preeminent military clan of the Quraysh, commanding the trade routes from the coastal Tihama region. Their warriors were feared across the Hijaz.",tags:["Military Dominance","Western District","Tihama Route","War Council"],figs:[{n:"Amr ibn Hish\u0101m (Ab\u016b Jahl)",d:"The most authoritative political voice of the clan."},{n:"Kh\u0101lid ibn al-Wal\u012bd",d:"Born of this clan, he became the most gifted military commander of his era."}],role:"Banu Makhzum controlled Makkah\u2019s military apparatus and the western commercial corridor."},
+  banu_umayya:{cat:"Political Clan \u00b7 Quraysh",name:"Ban\u016b Umayya",arabic:"\u0628\u0646\u0648 \u0623\u0645\u064a\u0629",desc:"The great rivals of Banu Hashim. Masters of mercantile politics and long-distance trade, they dominated Makkah\u2019s commercial life from the eastern districts.",tags:["Commercial Power","Eastern District","Syrian Trade","Political Brokers"],figs:[{n:"Ab\u016b Sufy\u0101n ibn \u1e24arb",d:"Supreme commander of Qurayshi trade caravans."},{n:"Uthm\u0101n ibn Aff\u0101n",d:"A wealthy merchant who became the third Caliph of Islam."}],role:"Banu Umayya\u2019s wealth came from mastery of the Syrian trade route. Their rivalry with Banu Hashim defined Qurayshi politics for generations."},
+  banu_zuhra:{cat:"Merchant Clan \u00b7 Quraysh",name:"Ban\u016b Zuhra",arabic:"\u0628\u0646\u0648 \u0632\u0647\u0631\u0629",desc:"A respected Qurayshi clan of scholars, diplomats and merchants occupying the northern quarters. Known for the incense trade from Yemen.",tags:["Northern District","Incense Trade","Diplomatic Clan","Yemeni Route"],figs:[{n:"\u0100mina bint Wahb",d:"Mother of the Prophet Muhammad \u0635\u0644\u0649 \u0627\u0644\u0644\u0647 \u0639\u0644\u064a\u0647 \u0648\u0633\u0644\u0645."},{n:"Abd al-Ra\u1e25m\u0101n ibn Awf",d:"One of the wealthiest companions of the Prophet \u0635\u0644\u0649 \u0627\u0644\u0644\u0647 \u0639\u0644\u064a\u0647 \u0648\u0633\u0644\u0645."}],role:"Banu Zuhra\u2019s mastery of the Yemeni incense route brought frankincense and myrrh that perfumed the entire city."},
+  zamzam:{cat:"Sacred Site",name:"Bi\u2019r Zamzam",arabic:"\u0628\u0626\u0631 \u0632\u0645\u0632\u0645",desc:"The sacred well of Makkah, believed to have miraculously appeared for H\u0101jar and her infant son Ism\u0101\u2019\u012bl.",tags:["Sacred Well","Blessed Water","Pilgrim Provision"],figs:[{n:"H\u0101jar",d:"Her search for water between Safa and Marwa is commemorated in Hajj rites to this day."},{n:"Abd al-Mu\u1e6d\u1e6dalib",d:"Rediscovered Zamzam following a divine dream."}],role:"Zamzam was the foundation of Makkah\u2019s existence. Without it the valley could not sustain settlement."},
+  suq_makkah:{cat:"Trade District",name:"S\u016bq Makkah",arabic:"\u0633\u0648\u0642 \u0645\u0643\u0629",desc:"The markets of ancient Makkah ranked among the most important commercial hubs on the Arabian Peninsula.",tags:["Incense Route","Annual Fair","Arabian Commerce","Caravan Hub"],figs:[{n:"H\u0101shim ibn Abd Man\u0101f",d:"Established the two-caravan system that anchored Makkah\u2019s commercial supremacy."}],role:"The market\u2019s genius was its dual foundation: religious authority brought pilgrims, and Qurayshi trade networks let them trade in safety."}
+};
+
+var ZONES=[
+  {id:"kaaba",       x:0,   z:0,  r:12, ly:14},
+  {id:"banu_hashim", x:-18, z:-18,r:18, ly:7},
+  {id:"banu_makhzum",x:-38, z:10, r:20, ly:7},
+  {id:"banu_umayya", x:36,  z:-14,r:20, ly:7},
+  {id:"banu_zuhra",  x:10,  z:40, r:18, ly:7},
+  {id:"zamzam",      x:7,   z:3,  r:6,  ly:10},
+  {id:"suq_makkah",  x:28,  z:26, r:16, ly:7}
+];
+
+// ── ENGINE ──
+var canvas = document.getElementById("c");
+var engine = new BABYLON.Engine(canvas, true, {adaptToDeviceRatio:false});
+var scene  = new BABYLON.Scene(engine);
+scene.clearColor = new BABYLON.Color4(0.58, 0.42, 0.24, 1);
+scene.skipPointerMovePicking = true;
+
+// ── CAMERA — orbital ──
+var cam = new BABYLON.ArcRotateCamera("cam", -Math.PI/2, Math.PI/3.2, 115, BABYLON.Vector3.Zero(), scene);
+cam.minZ=0.5; cam.maxZ=500;
+cam.lowerRadiusLimit=55; cam.upperRadiusLimit=180;
+cam.lowerBetaLimit=0.25; cam.upperBetaLimit=Math.PI/2.05;
+cam.wheelPrecision=8; cam.panningSensibility=0;
+cam.angularSensibilityX=600; cam.angularSensibilityY=600;
+cam.inertia=0.55;
+
+// ── LIGHTING — golden hour ──
+var sun = new BABYLON.DirectionalLight("sun", new BABYLON.Vector3(-0.4,-0.6,0.2), scene);
+sun.intensity=2.8; sun.diffuse=new BABYLON.Color3(1,0.76,0.38); sun.specular=new BABYLON.Color3(0.4,0.25,0.1);
+
+var sg = new BABYLON.ShadowGenerator(512, sun);
+sg.usePoissonSampling=true; sg.setDarkness(0.45);
+
+var hemi = new BABYLON.HemisphericLight("h", new BABYLON.Vector3(0,1,0), scene);
+hemi.intensity=0.65; hemi.diffuse=new BABYLON.Color3(0.85,0.65,0.42); hemi.groundColor=new BABYLON.Color3(0.5,0.32,0.18);
+
+// ── SKY ──
+(function(){
+  var sky = BABYLON.MeshBuilder.CreateSphere("sky",{diameter:580,sideOrientation:BABYLON.Mesh.BACKSIDE,segments:8},scene);
+  var m = new BABYLON.StandardMaterial("sm",scene); m.disableLighting=true; m.backFaceCulling=false;
+  var dt = new BABYLON.DynamicTexture("st",{width:256,height:256},scene,false);
+  var ctx = dt.getContext();
+  var g = ctx.createLinearGradient(0,256,0,0);
+  g.addColorStop(0,"#c04008"); g.addColorStop(0.15,"#d85818"); g.addColorStop(0.35,"#a03820");
+  g.addColorStop(0.55,"#6a2830"); g.addColorStop(0.8,"#2e1428"); g.addColorStop(1,"#160820");
+  ctx.fillStyle=g; ctx.fillRect(0,0,256,256);
+  var sg2 = ctx.createRadialGradient(60,230,0,60,230,80);
+  sg2.addColorStop(0,"rgba(255,210,90,1)"); sg2.addColorStop(0.3,"rgba(255,140,30,.8)"); sg2.addColorStop(1,"rgba(255,60,0,0)");
+  ctx.fillStyle=sg2; ctx.fillRect(0,0,256,256);
+  dt.update(); m.emissiveTexture=dt; sky.material=m; sky.isPickable=false;
+})();
+
+// ── FOG ──
+scene.fogMode=BABYLON.Scene.FOGMODE_LINEAR;
+scene.fogColor=new BABYLON.Color3(0.68,0.48,0.28);
+scene.fogStart=80; scene.fogEnd=250;
+
+// ── POST-PROCESS ──
+var pp = new BABYLON.DefaultRenderingPipeline("pp",false,scene,[cam]);
+pp.fxaaEnabled=true;
+pp.bloomEnabled=true; pp.bloomThreshold=0.7; pp.bloomWeight=0.22; pp.bloomKernel=32;
+pp.imageProcessingEnabled=true;
+pp.imageProcessing.contrast=1.1; pp.imageProcessing.exposure=1.08;
+pp.imageProcessing.vignetteEnabled=true; pp.imageProcessing.vignetteWeight=1.8;
+
+// ── LOAD GLB ──
+
+loadGLB();
+
+// ── LABELS ──
+var hud = document.getElementById("hud");
+var lblEls = {};
+ZONES.forEach(function(z) {
+  var c = CLANS[z.id]; if(!c) return;
+  var el = document.createElement("div"); el.className="wl";
+  el.innerHTML = '<div class="wlb"><div class="wln">'+c.name+'</div><div class="wls">'+c.cat+'</div></div>';
+  el.addEventListener("click", function(){ openPanel(z.id); });
+  hud.appendChild(el);
+  lblEls[z.id] = el;
+});
+
+function project(wx,wy,wz) {
+  var v = BABYLON.Vector3.Project(new BABYLON.Vector3(wx,wy,wz), BABYLON.Matrix.Identity(), scene.getTransformMatrix(), cam.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()));
+  return {x:v.x, y:v.y, behind:v.z>1};
+}
+
+// ── PANEL ──
+var panel = document.getElementById("panel");
+function openPanel(id) {
+  var c = CLANS[id]; if(!c) return;
+  document.getElementById("pCat").textContent  = c.cat;
+  document.getElementById("pTit").textContent  = c.name;
+  document.getElementById("pAr").textContent   = c.arabic;
+  document.getElementById("pDesc").textContent = c.desc;
+  document.getElementById("pRole").textContent = c.role;
+  document.getElementById("pTags").innerHTML   = c.tags.map(function(t){return '<span class="p-tag">'+t+'</span>';}).join("");
+  document.getElementById("pFigs").innerHTML   = c.figs.map(function(f){return '<div class="p-fig"><div class="p-fn">'+f.n+'</div><div class="p-fd">'+f.d+'</div></div>';}).join("");
+  panel.classList.add("open");
+}
+document.getElementById("pClose").addEventListener("click", function(){ panel.classList.remove("open"); });
+
+// ── MINIMAP ──
+var mmCtx = document.getElementById("mmC").getContext("2d");
+var SC = 130/200;
+function drawMM() {
+  mmCtx.clearRect(0,0,130,130);
+  mmCtx.fillStyle="rgba(13,10,6,.92)"; mmCtx.fillRect(0,0,130,130);
+  ZONES.forEach(function(z) {
+    var px=65+z.x*SC, py=65+z.z*SC;
+    mmCtx.strokeStyle="rgba(212,168,67,.25)"; mmCtx.lineWidth=1;
+    mmCtx.beginPath(); mmCtx.arc(px,py,z.r*SC,0,Math.PI*2); mmCtx.stroke();
+  });
+  mmCtx.fillStyle="#d4a843"; mmCtx.fillRect(62,62,6,6);
+  var cp = cam.position;
+  var px2=65+cp.x*SC, py2=65+cp.z*SC;
+  mmCtx.fillStyle="rgba(255,255,255,.7)"; mmCtx.beginPath(); mmCtx.arc(px2,py2,2.5,0,Math.PI*2); mmCtx.fill();
+}
+
+// ── ZONE PROXIMITY ──
+var curZ = null;
+var locEl = document.getElementById("loc");
+function checkZones() {
+  var px=cam.target.x, pz=cam.target.z;
+  var near=null, nd=Infinity;
+  ZONES.forEach(function(z) { var d=Math.hypot(px-z.x,pz-z.z); if(d<z.r&&d<nd){near=z;nd=d;} });
+  if(near!==curZ) {
+    curZ=near;
+    if(near){locEl.textContent=CLANS[near.id].name; locEl.classList.add("on");}
+    else locEl.classList.remove("on");
+  }
+}
+
+// ── RENDER LOOP ──
+var entered = false;
+var fc = 0;
+scene.registerAfterRender(function() {
+  if(!entered) return;
+  fc++;
+  // Labels
+  ZONES.forEach(function(z) {
+    var el=lblEls[z.id]; if(!el) return;
+    var cp=cam.position;
+    var dist=Math.hypot(cp.x-z.x,cp.z-z.z);
+    if(dist>200){el.classList.remove("vis"); return;}
+    var sc=project(z.x, z.ly||8, z.z);
+    if(sc.behind||sc.x<0||sc.x>engine.getRenderWidth()||sc.y<0||sc.y>engine.getRenderHeight()){el.classList.remove("vis"); return;}
+    el.style.left=sc.x+"px"; el.style.top=sc.y+"px";
+    el.classList.add("vis");
+    el.style.opacity=Math.min(1,(200-dist)/50);
+  });
+  if(fc%3!==0) return;
+  document.getElementById("needle").style.transform="rotate("+(-(cam.alpha+Math.PI/2))+"rad)";
+  drawMM(); checkZones();
+});
+
+engine.runRenderLoop(function(){ scene.render(); });
+window.addEventListener("resize", function(){ engine.resize(); });
+
+// ── LOADING UI ──
+var msgs=["Raising the desert\u2026","Placing the stones\u2026","Building the city\u2026","Lighting the sunset\u2026","Opening the gates\u2026"];
+var prog=0;
+var iv=setInterval(function(){
+  prog+=Math.random()*16+7;
+  if(prog>=100){prog=100;clearInterval(iv);
+    setTimeout(function(){
+      document.getElementById("ld").classList.add("out");
+      setTimeout(function(){document.getElementById("ld").style.display="none";document.getElementById("intro").classList.add("on");},900);
+    },400);
+  }
+  document.getElementById("ldBar").style.width=prog+"%";
+  document.getElementById("ldMsg").textContent=msgs[Math.min(Math.floor(prog/22),msgs.length-1)];
+},160);
+
+document.getElementById("enterBtn").addEventListener("click", function(){
+  document.getElementById("intro").classList.remove("on");
+  setTimeout(function(){ cam.attachControl(canvas,true); entered=true; },500);
+});
+</script>
+</body>
+</html>
