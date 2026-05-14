@@ -165,7 +165,11 @@ var ZONES = [
 
 /* ENGINE */
 var canvas = document.getElementById("c");
-var engine = new BABYLON.Engine(canvas, true);
+var engine = new BABYLON.Engine(canvas, true, {
+  preserveDrawingBuffer: false,
+  stencil: true,
+  antialias: true
+});
 var scene = new BABYLON.Scene(engine);
 scene.clearColor = new BABYLON.Color4(0.58, 0.42, 0.24, 1);
 scene.skipPointerMovePicking = true;
@@ -178,11 +182,13 @@ cam.lowerRadiusLimit = 55;
 cam.upperRadiusLimit = 180;
 cam.lowerBetaLimit = 0.25;
 cam.upperBetaLimit = Math.PI / 2.05;
-cam.wheelPrecision = 8;
+cam.wheelPrecision = 3;
+cam.wheelDeltaPercentage = 0.04;
 cam.panningSensibility = 0;
-cam.angularSensibilityX = 600;
-cam.angularSensibilityY = 600;
-cam.inertia = 0.55;
+cam.angularSensibilityX = 350;
+cam.angularSensibilityY = 350;
+cam.inertia = 0.82;
+cam.speed = 1.5;
 
 /* LIGHTING */
 var sun = new BABYLON.DirectionalLight("sun", new BABYLON.Vector3(-0.4, -0.6, 0.2), scene);
@@ -190,13 +196,15 @@ sun.intensity = 2.8;
 sun.diffuse = new BABYLON.Color3(1.0, 0.76, 0.38);
 sun.specular = new BABYLON.Color3(0.4, 0.25, 0.1);
 
-var sg = new BABYLON.ShadowGenerator(2048, sun);
-sg.useBlurExponentialShadowMap = true;
-sg.blurKernel = 32;
-sg.setDarkness(0.45);
-sg.bias = 0.005;
-sun.shadowMinZ = 0.1;
-sun.shadowMaxZ = 350;
+var sg = new BABYLON.ShadowGenerator(1024, sun);
+sg.usePercentageCloserFiltering = true;
+sg.filteringQuality = BABYLON.ShadowGenerator.QUALITY_MEDIUM;
+sg.setDarkness(0.4);
+sg.bias = 0.008;
+sg.normalBias = 0.02;
+sun.shadowMinZ = 1;
+sun.shadowMaxZ = 300;
+sun.autoUpdateExtends = true;
 sun.autoCalcShadowZBounds = true;
 
 var hemi = new BABYLON.HemisphericLight("h", new BABYLON.Vector3(0, 1, 0), scene);
@@ -238,14 +246,18 @@ scene.fogStart = 80;
 scene.fogEnd = 250;
 
 /* POST-PROCESS */
-var pp = new BABYLON.DefaultRenderingPipeline("pp", false, scene, [cam]);
+var pp = new BABYLON.DefaultRenderingPipeline("pp", true, scene, [cam]);
 pp.fxaaEnabled = true;
+pp.samples = 4;
 pp.bloomEnabled = true;
 pp.bloomThreshold = 0.7;
 pp.bloomWeight = 0.22;
-pp.bloomKernel = 32;
+pp.bloomKernel = 48;
+pp.bloomScale = 0.6;
 pp.imageProcessingEnabled = true;
-pp.imageProcessing.contrast = 1.1;
+pp.imageProcessing.toneMappingEnabled = true;
+pp.imageProcessing.toneMappingType = BABYLON.ImageProcessingConfiguration.TONEMAPPING_ACES;
+pp.imageProcessing.contrast = 1.12;
 pp.imageProcessing.exposure = 1.08;
 pp.imageProcessing.vignetteEnabled = true;
 pp.imageProcessing.vignetteWeight = 1.8;
@@ -493,27 +505,33 @@ var DAY = {
   fogEnd:      250,
   clearColor:  new BABYLON.Color4(0.58, 0.42, 0.24, 1),
   exposure:    1.08,
-  contrast:    1.1,
+  contrast:    1.12,
   bloomWeight: 0.22,
-  shadowDark:  0.45
+  bloomThresh: 0.7,
+  shadowDark:  0.35,
+  shadowBias:  0.008,
+  vignetteWt:  1.8
 };
 
 var NIGHT = {
-  sunDir:      new BABYLON.Vector3(0.1, -0.8, -0.3),
-  sunInt:      0.35,
-  sunDiffuse:  new BABYLON.Color3(0.25, 0.30, 0.55),
-  sunSpec:     new BABYLON.Color3(0.05, 0.06, 0.12),
-  hemiInt:     0.18,
-  hemiDiffuse: new BABYLON.Color3(0.15, 0.18, 0.35),
-  hemiGround:  new BABYLON.Color3(0.06, 0.05, 0.10),
-  fogColor:    new BABYLON.Color3(0.05, 0.04, 0.10),
-  fogStart:    50,
-  fogEnd:      200,
-  clearColor:  new BABYLON.Color4(0.04, 0.03, 0.08, 1),
-  exposure:    0.85,
-  contrast:    1.25,
-  bloomWeight: 0.45,
-  shadowDark:  0.75
+  sunDir:      new BABYLON.Vector3(0.2, -0.7, -0.4),
+  sunInt:      0.55,
+  sunDiffuse:  new BABYLON.Color3(0.30, 0.35, 0.60),
+  sunSpec:     new BABYLON.Color3(0.08, 0.10, 0.20),
+  hemiInt:     0.12,
+  hemiDiffuse: new BABYLON.Color3(0.10, 0.12, 0.28),
+  hemiGround:  new BABYLON.Color3(0.04, 0.03, 0.08),
+  fogColor:    new BABYLON.Color3(0.04, 0.03, 0.08),
+  fogStart:    40,
+  fogEnd:      180,
+  clearColor:  new BABYLON.Color4(0.03, 0.02, 0.06, 1),
+  exposure:    0.80,
+  contrast:    1.30,
+  bloomWeight: 0.50,
+  bloomThresh: 0.4,
+  shadowDark:  0.72,
+  shadowBias:  0.012,
+  vignetteWt:  3.0
 };
 
 /* Night sky texture (stars + moon glow) */
@@ -571,7 +589,7 @@ function lerpColor4(a, b, t) {
 function lerpVal(a, b, t) { return a + (b - a) * t; }
 
 function applyDayNight(t) {
-  /* Sun */
+  /* Sun / moonlight direction and color */
   sun.direction = BABYLON.Vector3.Lerp(DAY.sunDir, NIGHT.sunDir, t);
   sun.intensity = lerpVal(DAY.sunInt, NIGHT.sunInt, t);
   sun.diffuse = lerpColor3(DAY.sunDiffuse, NIGHT.sunDiffuse, t);
@@ -594,20 +612,21 @@ function applyDayNight(t) {
   pp.imageProcessing.exposure = lerpVal(DAY.exposure, NIGHT.exposure, t);
   pp.imageProcessing.contrast = lerpVal(DAY.contrast, NIGHT.contrast, t);
   pp.bloomWeight = lerpVal(DAY.bloomWeight, NIGHT.bloomWeight, t);
+  pp.bloomThreshold = lerpVal(DAY.bloomThresh, NIGHT.bloomThresh, t);
+  pp.imageProcessing.vignetteWeight = lerpVal(DAY.vignetteWt, NIGHT.vignetteWt, t);
 
-  /* Shadows */
+  /* Shadows — always on, just change darkness and bias */
   sg.setDarkness(lerpVal(DAY.shadowDark, NIGHT.shadowDark, t));
+  sg.bias = lerpVal(DAY.shadowBias, NIGHT.shadowBias, t);
 
   /* Sky texture crossfade — swap at midpoint */
   if (t < 0.5) {
     skyMat.emissiveTexture = daySkyTex;
-    skyMat.alpha = 1;
   } else {
     skyMat.emissiveTexture = nightSkyTex;
-    skyMat.alpha = 1;
   }
 
-  /* Bird visibility — fewer visible at night, hide some */
+  /* Bird visibility — fewer visible at night */
   for (var bv = 0; bv < birds.length; bv++) {
     birds[bv].root.setEnabled(t < 0.7 || bv < 3);
   }
