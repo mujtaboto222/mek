@@ -507,7 +507,7 @@ for (var bi = 0; bi < BIRD_COUNT; bi++) {
    Tiny scale, spread across Makkah, various movement patterns
    ============================================================ */
 var walkers = [];
-var WALKER_COUNT = 20;
+var WALKER_COUNT = 100;
 
 var figMat = new BABYLON.StandardMaterial("figMat", scene);
 figMat.diffuseColor = new BABYLON.Color3(0.10, 0.08, 0.06);
@@ -547,23 +547,28 @@ for (var wi = 0; wi < WALKER_COUNT; wi++) {
   figHead.parent = figRoot;
   figHead.position.y = 1.0;
 
-  /* Assign a movement type:
-     - type 0: circular around Kaaba (inner, like tawaf)
-     - type 1: circular around Kaaba (wider ring)
-     - type 2: wander between districts (random waypoints)
-     - type 3: walk along a straight market path
+  /* Movement distribution for 100 figures:
+     0-29:  tawaf (tight circle around Kaaba) — 30
+     30-54: town circle (wider orbits) — 25
+     55-79: waypoint wanderers — 25
+     80-99: market path walkers — 20
   */
-  var mtype = wi % 4;
+  var mtype;
+  if (wi < 30) mtype = 0;
+  else if (wi < 55) mtype = 1;
+  else if (wi < 80) mtype = 2;
+  else mtype = 3;
   var wdata = {};
 
   if (mtype === 0) {
-    /* Tight circle around Kaaba */
+    /* Tight circle around Kaaba — tawaf */
     wdata.mode = "circle";
-    wdata.radius = 8 + Math.random() * 6;
-    wdata.speed = 0.02 + Math.random() * 0.015;
+    wdata.radius = 6 + Math.random() * 10;
+    wdata.speed = 0.015 + Math.random() * 0.02;
     wdata.angle = Math.random() * Math.PI * 2;
     wdata.dir = -1; /* counter-clockwise */
-    wdata.cx = 0; wdata.cz = 0;
+    wdata.cx = (Math.random() - 0.5) * 2;
+    wdata.cz = (Math.random() - 0.5) * 2;
   } else if (mtype === 1) {
     /* Wider circle, walking around the town */
     wdata.mode = "circle";
