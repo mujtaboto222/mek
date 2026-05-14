@@ -516,21 +516,36 @@ figMat.specularColor = BABYLON.Color3.Black();
 for (var wi = 0; wi < WALKER_COUNT; wi++) {
   var figRoot = new BABYLON.TransformNode("walker_" + wi, scene);
 
-  /* Body — small tapered cylinder */
+  /* Legs — two thin cylinders */
+  var legL = BABYLON.MeshBuilder.CreateCylinder("wlegL_" + wi, {
+    diameterTop: 0.06, diameterBottom: 0.06, height: 0.5, tessellation: 5
+  }, scene);
+  legL.material = figMat;
+  legL.parent = figRoot;
+  legL.position.set(-0.06, 0.25, 0);
+
+  var legR = BABYLON.MeshBuilder.CreateCylinder("wlegR_" + wi, {
+    diameterTop: 0.06, diameterBottom: 0.06, height: 0.5, tessellation: 5
+  }, scene);
+  legR.material = figMat;
+  legR.parent = figRoot;
+  legR.position.set(0.06, 0.25, 0);
+
+  /* Torso — slim tapered cylinder */
   var figBody = BABYLON.MeshBuilder.CreateCylinder("wbody_" + wi, {
-    diameterTop: 0.25, diameterBottom: 0.55, height: 1.4, tessellation: 6
+    diameterTop: 0.14, diameterBottom: 0.22, height: 0.5, tessellation: 6
   }, scene);
   figBody.material = figMat;
   figBody.parent = figRoot;
-  figBody.position.y = 0.7;
+  figBody.position.y = 0.65;
 
   /* Head — small sphere */
   var figHead = BABYLON.MeshBuilder.CreateSphere("whead_" + wi, {
-    diameter: 0.3, segments: 5
+    diameter: 0.16, segments: 5
   }, scene);
   figHead.material = figMat;
   figHead.parent = figRoot;
-  figHead.position.y = 1.55;
+  figHead.position.y = 1.0;
 
   /* Assign a movement type:
      - type 0: circular around Kaaba (inner, like tawaf)
@@ -545,7 +560,7 @@ for (var wi = 0; wi < WALKER_COUNT; wi++) {
     /* Tight circle around Kaaba */
     wdata.mode = "circle";
     wdata.radius = 8 + Math.random() * 6;
-    wdata.speed = 0.12 + Math.random() * 0.08;
+    wdata.speed = 0.02 + Math.random() * 0.015;
     wdata.angle = Math.random() * Math.PI * 2;
     wdata.dir = -1; /* counter-clockwise */
     wdata.cx = 0; wdata.cz = 0;
@@ -553,7 +568,7 @@ for (var wi = 0; wi < WALKER_COUNT; wi++) {
     /* Wider circle, walking around the town */
     wdata.mode = "circle";
     wdata.radius = 20 + Math.random() * 25;
-    wdata.speed = 0.06 + Math.random() * 0.06;
+    wdata.speed = 0.012 + Math.random() * 0.01;
     wdata.angle = Math.random() * Math.PI * 2;
     wdata.dir = (Math.random() > 0.5) ? 1 : -1;
     wdata.cx = (Math.random() - 0.5) * 15;
@@ -561,7 +576,7 @@ for (var wi = 0; wi < WALKER_COUNT; wi++) {
   } else if (mtype === 2) {
     /* Random waypoint wanderer */
     wdata.mode = "wander";
-    wdata.speed = 1.5 + Math.random() * 1.5;
+    wdata.speed = 0.4 + Math.random() * 0.3;
     wdata.px = (Math.random() - 0.5) * 80;
     wdata.pz = (Math.random() - 0.5) * 80;
     wdata.tx = (Math.random() - 0.5) * 80;
@@ -570,7 +585,7 @@ for (var wi = 0; wi < WALKER_COUNT; wi++) {
   } else {
     /* Straight path walker (market road) */
     wdata.mode = "path";
-    wdata.speed = 1.8 + Math.random() * 1.2;
+    wdata.speed = 0.4 + Math.random() * 0.25;
     var pathAngle = Math.random() * Math.PI * 2;
     wdata.ax = Math.cos(pathAngle); wdata.az = Math.sin(pathAngle);
     wdata.px = (Math.random() - 0.5) * 60;
@@ -580,10 +595,10 @@ for (var wi = 0; wi < WALKER_COUNT; wi++) {
     wdata.dir = 1;
   }
 
-  wdata.bobSpd = 4 + Math.random() * 2;
-  wdata.bobAmt = 0.03 + Math.random() * 0.02;
+  wdata.bobSpd = 3 + Math.random() * 1.5;
+  wdata.bobAmt = 0.015 + Math.random() * 0.01;
 
-  walkers.push({ root: figRoot, body: figBody, head: figHead, d: wdata });
+  walkers.push({ root: figRoot, body: figBody, head: figHead, legL: legL, legR: legR, d: wdata });
 }
 
 /* ============================================================
@@ -851,8 +866,12 @@ scene.registerBeforeRender(function() {
     wk.root.position.y = 0;
     /* Walking bob */
     var bob = Math.abs(Math.sin(animTime * wd.bobSpd)) * wd.bobAmt;
-    wk.body.position.y = 0.7 + bob;
-    wk.head.position.y = 1.55 + bob;
+    wk.body.position.y = 0.65 + bob;
+    wk.head.position.y = 1.0 + bob;
+    /* Leg swing */
+    var legSwing = Math.sin(animTime * wd.bobSpd) * 0.2;
+    wk.legL.rotation.x = legSwing;
+    wk.legR.rotation.x = -legSwing;
   }
 });
 </script>
