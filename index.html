@@ -190,9 +190,14 @@ sun.intensity = 2.8;
 sun.diffuse = new BABYLON.Color3(1.0, 0.76, 0.38);
 sun.specular = new BABYLON.Color3(0.4, 0.25, 0.1);
 
-var sg = new BABYLON.ShadowGenerator(512, sun);
-sg.usePoissonSampling = true;
+var sg = new BABYLON.ShadowGenerator(2048, sun);
+sg.useBlurExponentialShadowMap = true;
+sg.blurKernel = 32;
 sg.setDarkness(0.45);
+sg.bias = 0.005;
+sun.shadowMinZ = 0.1;
+sun.shadowMaxZ = 350;
+sun.autoCalcShadowZBounds = true;
 
 var hemi = new BABYLON.HemisphericLight("h", new BABYLON.Vector3(0, 1, 0), scene);
 hemi.intensity = 0.65;
@@ -411,7 +416,7 @@ document.getElementById("enterBtn").addEventListener("click", function() {
    BIRDS — Circling overhead
    ============================================================ */
 var birds = [];
-var BIRD_COUNT = 9;
+var BIRD_COUNT = 11;
 
 var birdMat = new BABYLON.StandardMaterial("birdMat", scene);
 birdMat.diffuseColor = new BABYLON.Color3(0.12, 0.08, 0.05);
@@ -604,7 +609,7 @@ function applyDayNight(t) {
 
   /* Bird visibility — fewer visible at night, hide some */
   for (var bv = 0; bv < birds.length; bv++) {
-    birds[bv].root.setEnabled(t < 0.7 || bv < 2);
+    birds[bv].root.setEnabled(t < 0.7 || bv < 3);
   }
 }
 
