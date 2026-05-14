@@ -510,43 +510,20 @@ for (var bi = 0; bi < BIRD_COUNT; bi++) {
 var walkers = [];
 var WALKER_COUNT = 80;
 
-/* Robe color palette — warm desert tones */
-var ROBE_COLORS = [
-  [0.78, 0.68, 0.50], /* sand white */
-  [0.70, 0.58, 0.40], /* warm cream */
-  [0.60, 0.48, 0.32], /* tan */
-  [0.50, 0.38, 0.24], /* light brown */
-  [0.40, 0.30, 0.18], /* desert brown */
-  [0.35, 0.25, 0.15], /* dark earth */
-  [0.55, 0.42, 0.28], /* amber */
-  [0.65, 0.50, 0.30], /* golden sand */
-  [0.30, 0.22, 0.14], /* dark cloak */
-  [0.72, 0.60, 0.42], /* pale ochre */
-];
+/* Single dark figure material — all figures are black silhouettes */
+var figDarkMat = new BABYLON.StandardMaterial("figDark", scene);
+figDarkMat.diffuseColor = new BABYLON.Color3(0.08, 0.06, 0.05);
+figDarkMat.specularColor = BABYLON.Color3.Black();
 
-/* Create material pool (reuse to save GPU) */
-var robeMats = [];
-for (var mi = 0; mi < ROBE_COLORS.length; mi++) {
-  var rm = new BABYLON.StandardMaterial("robeMat_" + mi, scene);
-  rm.diffuseColor = new BABYLON.Color3(ROBE_COLORS[mi][0], ROBE_COLORS[mi][1], ROBE_COLORS[mi][2]);
-  rm.specularColor = new BABYLON.Color3(0.05, 0.04, 0.03);
-  rm.specularPower = 4;
-  robeMats.push(rm);
+/* Slightly varied darks for depth */
+var figDarkMats = [];
+for (var mi = 0; mi < 4; mi++) {
+  var dm = new BABYLON.StandardMaterial("figDk_" + mi, scene);
+  var v = 0.06 + mi * 0.02;
+  dm.diffuseColor = new BABYLON.Color3(v, v * 0.85, v * 0.75);
+  dm.specularColor = BABYLON.Color3.Black();
+  figDarkMats.push(dm);
 }
-
-/* Darker materials for head wraps and cloaks */
-var headMats = [];
-for (var hi = 0; hi < 5; hi++) {
-  var hm = new BABYLON.StandardMaterial("headMat_" + hi, scene);
-  var hc = ROBE_COLORS[hi + 5] || ROBE_COLORS[4];
-  hm.diffuseColor = new BABYLON.Color3(hc[0] * 0.8, hc[1] * 0.8, hc[2] * 0.8);
-  hm.specularColor = new BABYLON.Color3(0.03, 0.02, 0.02);
-  headMats.push(hm);
-}
-
-var skinMat = new BABYLON.StandardMaterial("walkerSkin", scene);
-skinMat.diffuseColor = new BABYLON.Color3(0.52, 0.38, 0.26);
-skinMat.specularColor = new BABYLON.Color3(0.04, 0.03, 0.02);
 
 for (var wi = 0; wi < WALKER_COUNT; wi++) {
   var figRoot = new BABYLON.TransformNode("walker_" + wi, scene);
@@ -555,12 +532,11 @@ for (var wi = 0; wi < WALKER_COUNT; wi++) {
   var hScale = 0.85 + Math.random() * 0.25;
   var wScale = 0.9 + Math.random() * 0.15;
 
-  /* Pick random materials */
-  var robeM = robeMats[Math.floor(Math.random() * robeMats.length)];
-  var headM = headMats[Math.floor(Math.random() * headMats.length)];
-  /* Some figures get a darker cloak over robe */
+  /* Pick a dark material variant for subtle depth */
+  var robeM = figDarkMats[wi % figDarkMats.length];
+  var headM = figDarkMat;
   var hasCloakFlag = (Math.random() > 0.6);
-  var cloakM = robeMats[Math.floor(Math.random() * 3) + 7]; /* darker tones */
+  var cloakM = figDarkMat;
 
   /* === ROBE / THAWB — main body, wide flowing garment hiding legs === */
   /* Lower robe: wide at hem, tapers to waist */
@@ -631,7 +607,7 @@ for (var wi = 0; wi < WALKER_COUNT; wi++) {
   var neck = BABYLON.MeshBuilder.CreateCylinder("wnck_" + wi, {
     diameter: 0.1 * wScale, height: 0.06 * hScale, tessellation: 6
   }, scene);
-  neck.material = skinMat;
+  neck.material = figDarkMat;
   neck.parent = figRoot;
   neck.position.y = 1.2 * hScale;
 
@@ -639,7 +615,7 @@ for (var wi = 0; wi < WALKER_COUNT; wi++) {
   var head = BABYLON.MeshBuilder.CreateSphere("whd_" + wi, {
     diameter: 0.18 * wScale, segments: 6
   }, scene);
-  head.material = skinMat;
+  head.material = figDarkMat;
   head.parent = figRoot;
   head.position.y = 1.3 * hScale;
   head.scaling.y = 1.1;
