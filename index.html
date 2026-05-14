@@ -165,21 +165,33 @@ canvas#c{width:100%;height:100%;display:block;touch-action:none;outline:none}
 var CLANS = {
   kaaba: { cat:"Sacred Centre", name:"Al-Kaaba", arabic:"\u0627\u0644\u0643\u0639\u0628\u0629 \u0627\u0644\u0645\u0634\u0631\u0641\u0629", desc:"The ancient cubic structure at the heart of Makkah. Long before Islam, pilgrims from every Arabian tribe journeyed here annually. The city's entire existence revolved around its role as custodian of this sanctuary.", tags:["Sacred Sanctuary","Pilgrimage Centre","Black Stone","Ibrahim's Legacy"], figs:[{n:"Qusay ibn Kilab",d:"United the Quraysh clans around 400 CE and established the custodianship system."},{n:"Abd al-Muttalib",d:"Grandfather of the Prophet; keeper of the Kaaba who rediscovered Zamzam."}], role:"The Kaaba was the axis around which all Arabian tribal life revolved." },
   banu_hashim: { cat:"Noble Clan", name:"Banu Hashim", arabic:"\u0628\u0646\u0648 \u0647\u0627\u0634\u0645", desc:"The most honoured clan of the Quraysh, entrusted with providing water to pilgrims from the sacred Zamzam well. Their quarter lay directly adjacent to the Kaaba.", tags:["Zamzam Custodians","Water Bearers","Rifada Duty","Inner Haram"], figs:[{n:"Hashim ibn Abd Manaf",d:"Pioneered the two great trade caravans to Syria and Yemen."},{n:"Abd al-Muttalib",d:"Rediscovered Zamzam after centuries of burial."}], role:"Banu Hashim held the twin sacred offices of Siqaya and Rifada." },
-  banu_makhzum: { cat:"Warrior Clan", name:"Banu Makhzum", arabic:"\u0628\u0646\u0648 \u0645\u062e\u0632\u0648\u0645", desc:"The preeminent military clan of the Quraysh, commanding the trade routes from the coastal Tihama region.", tags:["Military Dominance","Western District","Tihama Route","War Council"], figs:[{n:"Amr ibn Hisham (Abu Jahl)",d:"The most authoritative political voice of the clan."},{n:"Khalid ibn al-Walid",d:"Born of this clan, he became the most gifted military commander of his era."}], role:"Banu Makhzum controlled Makkah's military apparatus and the western commercial corridor." },
   banu_umayya: { cat:"Political Clan", name:"Banu Umayya", arabic:"\u0628\u0646\u0648 \u0623\u0645\u064a\u0629", desc:"The great rivals of Banu Hashim. Masters of mercantile politics and long-distance trade from the eastern districts.", tags:["Commercial Power","Eastern District","Syrian Trade","Political Brokers"], figs:[{n:"Abu Sufyan ibn Harb",d:"Supreme commander of Qurayshi trade caravans."},{n:"Uthman ibn Affan",d:"A wealthy merchant who became the third Caliph of Islam."}], role:"Banu Umayya's wealth came from mastery of the Syrian trade route." },
+  banu_asad: { cat:"Allied Clan", name:"Banu Asad", arabic:"\u0628\u0646\u0648 \u0623\u0633\u062f", desc:"Close allies of Banu Hashim, the Banu Asad occupied a quarter near the northeastern approach to the Kaaba. Known for their strong tribal loyalty.", tags:["Hashim Allies","Northeast Quarter","Tribal Loyalty","Inner Ring"], figs:[{n:"Khadijah bint Khuwaylid",d:"The first wife of the Prophet Muhammad and the first to embrace Islam. One of the most successful merchants in all of Makkah."},{n:"Waraqah ibn Nawfal",d:"A Hanif scholar and cousin of Khadijah who recognized the coming of prophecy."}], role:"Banu Asad's alliance with Banu Hashim gave them privileged proximity to the Haram and significant social standing." },
+  banu_abd_aldar: { cat:"Custodian Clan", name:"Banu Abd al-Dar", arabic:"\u0628\u0646\u0648 \u0639\u0628\u062f \u0627\u0644\u062f\u0627\u0631", desc:"Hereditary keepers of the Kaaba's key and its sacred banner. They held the ancient office of Hijaba, controlling who could enter the sanctuary.", tags:["Key of Kaaba","Hijaba Office","Sacred Banner","Dar al-Nadwa"], figs:[{n:"Uthman ibn Talha",d:"Last pre-Islamic keeper of the Key. The Prophet returned the Key to his family permanently."},{n:"Mus'ab ibn Umayr",d:"A young nobleman of this clan who became one of Islam's first ambassadors to Madinah."}], role:"Banu Abd al-Dar held three of the six great offices of Makkah: the Key, the Banner, and the council house Dar al-Nadwa." },
   banu_zuhra: { cat:"Merchant Clan", name:"Banu Zuhra", arabic:"\u0628\u0646\u0648 \u0632\u0647\u0631\u0629", desc:"A respected Qurayshi clan of scholars, diplomats and merchants occupying the northern quarters.", tags:["Northern District","Incense Trade","Diplomatic Clan","Yemeni Route"], figs:[{n:"Amina bint Wahb",d:"Mother of the Prophet Muhammad."},{n:"Abd al-Rahman ibn Awf",d:"One of the wealthiest companions of the Prophet."}], role:"Banu Zuhra's mastery of the Yemeni incense route brought frankincense that perfumed the entire city." },
+  banu_taym: { cat:"Diplomatic Clan", name:"Banu Taym", arabic:"\u0628\u0646\u0648 \u062a\u064a\u0645", desc:"Known for their wisdom, diplomacy and measured counsel. The Banu Taym served as mediators between rival clans and were trusted arbiters of disputes.", tags:["Southern Quarter","Diplomacy","Arbitration","Trusted Counsel"], figs:[{n:"Abu Bakr al-Siddiq",d:"The Prophet's closest companion and the first Caliph of Islam. He freed many enslaved early Muslims with his own wealth."},{n:"Talha ibn Ubaydallah",d:"One of the ten promised paradise, known for his bravery and generosity."}], role:"Banu Taym's reputation for fairness made them essential brokers of peace during Makkah's frequent inter-clan disputes." },
+  banu_makhzum: { cat:"Warrior Clan", name:"Banu Makhzum", arabic:"\u0628\u0646\u0648 \u0645\u062e\u0632\u0648\u0645", desc:"The preeminent military clan of the Quraysh, commanding the trade routes from the coastal Tihama region.", tags:["Military Dominance","Western District","Tihama Route","War Council"], figs:[{n:"Amr ibn Hisham (Abu Jahl)",d:"The most authoritative political voice of the clan."},{n:"Khalid ibn al-Walid",d:"Born of this clan, he became the most gifted military commander of his era."}], role:"Banu Makhzum controlled Makkah's military apparatus and the western commercial corridor." },
+  banu_adei: { cat:"Judicial Clan", name:"Banu Adei", arabic:"\u0628\u0646\u0648 \u0639\u062f\u064a", desc:"Guardians of Makkah's customary law and the arbiters of blood-debt disputes. Their elders sat in judgment over inter-tribal grievances.", tags:["Northwest Quarter","Tribal Law","Blood Debt Arbiters","Justice"], figs:[{n:"Umar ibn al-Khattab",d:"The fearsome and just second Caliph of Islam. Before his conversion he was the most feared enforcer of Qurayshi authority."},{n:"Zayd ibn Amr",d:"A rare pre-Islamic monotheist who rejected idol worship and sought the religion of Ibrahim."}], role:"Banu Adei's judicial authority made them the enforcers of Makkah's unwritten constitution — the tribal customs that kept the peace." },
+  sahm: { cat:"Trade Clan", name:"Banu Sahm", arabic:"\u0628\u0646\u0648 \u0633\u0647\u0645", desc:"Specialists in long-distance caravan trade, the Banu Sahm managed some of the most profitable trade routes linking Makkah to the wider world.", tags:["Southeast Quarter","Caravan Masters","Long-Distance Trade","Ethiopian Route"], figs:[{n:"Amr ibn al-As",d:"A brilliant diplomat and military commander who later conquered Egypt for Islam."},{n:"Al-As ibn Wa'il",d:"A wealthy caravan magnate and elder of the clan."}], role:"Banu Sahm's commercial networks extended from Abyssinia to Persia, making them essential to Makkah's role as a trade crossroads." },
+  jomah: { cat:"Pastoral Clan", name:"Banu Jumah", arabic:"\u0628\u0646\u0648 \u062c\u0645\u062d", desc:"Keepers of vast herds and pastures beyond the city walls, the Banu Jumah supplied Makkah with livestock, leather, and dairy — the essentials of desert life.", tags:["Southwest Quarter","Livestock","Pastoral Wealth","Desert Herds"], figs:[{n:"Uthman ibn Maz'un",d:"One of the earliest converts to Islam, known for his extreme piety and asceticism."},{n:"Umayya ibn Khalaf",d:"A wealthy elder and fierce opponent of the early Muslim community."}], role:"Banu Jumah's pastoral wealth was Makkah's food security. Their herds fed the city and provisioned the great pilgrim caravans." },
   zamzam: { cat:"Sacred Site", name:"Bir Zamzam", arabic:"\u0628\u0626\u0631 \u0632\u0645\u0632\u0645", desc:"The sacred well of Makkah, believed to have miraculously appeared for Hajar and her infant son Ismail.", tags:["Sacred Well","Blessed Water","Pilgrim Provision"], figs:[{n:"Hajar",d:"Her search for water between Safa and Marwa is commemorated in Hajj rites."},{n:"Abd al-Muttalib",d:"Rediscovered Zamzam following a divine dream."}], role:"Zamzam was the foundation of Makkah's existence." },
   suq_makkah: { cat:"Trade District", name:"Suq Makkah", arabic:"\u0633\u0648\u0642 \u0645\u0643\u0629", desc:"The markets of ancient Makkah ranked among the most important commercial hubs on the Arabian Peninsula.", tags:["Incense Route","Annual Fair","Arabian Commerce","Caravan Hub"], figs:[{n:"Hashim ibn Abd Manaf",d:"Established the two-caravan system that anchored Makkah's commercial supremacy."}], role:"The market's genius was its dual foundation: religious authority brought pilgrims, and Qurayshi trade networks let them trade in safety." }
 };
 
 var ZONES = [
-  {id:"kaaba",       x:0,   z:0,   r:12, ly:14},
-  {id:"banu_hashim", x:-18, z:-18, r:18, ly:7},
-  {id:"banu_makhzum",x:-38, z:10,  r:20, ly:7},
-  {id:"banu_umayya", x:36,  z:-14, r:20, ly:7},
-  {id:"banu_zuhra",  x:10,  z:40,  r:18, ly:7},
-  {id:"zamzam",      x:7,   z:3,   r:6,  ly:10},
-  {id:"suq_makkah",  x:28,  z:26,  r:16, ly:7}
+  {id:"kaaba",          x:0,    z:0,    r:12,  ly:14},
+  {id:"banu_hashim",    x:-18,  z:-18,  r:16,  ly:7},
+  {id:"banu_umayya",    x:36,   z:-14,  r:18,  ly:7},
+  {id:"banu_asad",      x:18,   z:-30,  r:15,  ly:7},
+  {id:"banu_abd_aldar", x:-8,   z:18,   r:15,  ly:7},
+  {id:"banu_zuhra",     x:10,   z:40,   r:16,  ly:7},
+  {id:"banu_taym",      x:-10,  z:-40,  r:16,  ly:7},
+  {id:"banu_makhzum",   x:-38,  z:10,   r:18,  ly:7},
+  {id:"banu_adei",      x:-32,  z:-28,  r:15,  ly:7},
+  {id:"sahm",           x:38,   z:22,   r:16,  ly:7},
+  {id:"jomah",          x:-28,  z:36,   r:16,  ly:7},
+  {id:"zamzam",         x:7,    z:3,    r:6,   ly:10},
+  {id:"suq_makkah",     x:28,   z:26,   r:14,  ly:7}
 ];
 
 /* ENGINE */
@@ -291,6 +303,99 @@ BABYLON.SceneLoader.ImportMesh("", "./", "scene.glb", scene,
   }
 );
 
+/* ============================================================
+   ZONE HOVER HIGHLIGHTS — Ground discs per zone that glow on hover
+   ============================================================ */
+var zoneDiscs = {};
+var hoveredZone = null;
+var hoverLabelEl = document.createElement("div");
+hoverLabelEl.style.cssText = "position:fixed;z-index:170;pointer-events:none;opacity:0;transition:opacity .25s;transform:translate(-50%,-120%)";
+hoverLabelEl.innerHTML = '<div style="background:rgba(10,7,4,.88);border:1px solid rgba(212,168,67,.7);border-radius:4px;padding:.4rem .9rem;white-space:nowrap;text-align:center"><div id="hvName" style="font-family:Cinzel,serif;font-size:.75rem;letter-spacing:.15em;color:#f0c96a;text-transform:uppercase"></div><div id="hvCat" style="font-size:.6rem;color:#a08060;margin-top:2px;font-style:italic"></div></div>';
+document.body.appendChild(hoverLabelEl);
+
+/* Highlight material — semi-transparent golden glow */
+var hlMat = new BABYLON.StandardMaterial("hlMat", scene);
+hlMat.diffuseColor = new BABYLON.Color3(0.94, 0.78, 0.35);
+hlMat.emissiveColor = new BABYLON.Color3(0.25, 0.18, 0.05);
+hlMat.specularColor = BABYLON.Color3.Black();
+hlMat.alpha = 0;
+hlMat.backFaceCulling = false;
+
+/* Create a ground disc for each zone */
+ZONES.forEach(function(z) {
+  var disc = BABYLON.MeshBuilder.CreateDisc("zdisc_" + z.id, {
+    radius: z.r, tessellation: 32, sideOrientation: BABYLON.Mesh.DOUBLESIDE
+  }, scene);
+  disc.rotation.x = Math.PI / 2;
+  disc.position.set(z.x, 0.15, z.z);
+  disc.isPickable = true;
+
+  /* Each disc gets its own material instance for independent alpha */
+  var dMat = hlMat.clone("hlMat_" + z.id);
+  dMat.alpha = 0;
+  disc.material = dMat;
+
+  disc.metadata = { zoneId: z.id };
+  zoneDiscs[z.id] = { mesh: disc, mat: dMat, targetAlpha: 0, currentAlpha: 0 };
+});
+
+/* Enable scene picking for hover */
+scene.skipPointerMovePicking = false;
+
+/* Pointer move handler — detect hover over zone discs */
+scene.onPointerMove = function(evt) {
+  if (!entered) return;
+  var pick = scene.pick(scene.pointerX, scene.pointerY, function(m) {
+    return m.name && m.name.indexOf("zdisc_") === 0;
+  });
+
+  var newHover = null;
+  if (pick && pick.hit && pick.pickedMesh && pick.pickedMesh.metadata) {
+    newHover = pick.pickedMesh.metadata.zoneId;
+  }
+
+  if (newHover !== hoveredZone) {
+    /* Unhighlight previous */
+    if (hoveredZone && zoneDiscs[hoveredZone]) {
+      zoneDiscs[hoveredZone].targetAlpha = 0;
+    }
+    /* Highlight new */
+    if (newHover && zoneDiscs[newHover]) {
+      zoneDiscs[newHover].targetAlpha = 0.18;
+    }
+    hoveredZone = newHover;
+
+    /* Update hover label */
+    if (hoveredZone) {
+      var cl = CLANS[hoveredZone];
+      if (cl) {
+        document.getElementById("hvName").textContent = cl.name;
+        document.getElementById("hvCat").textContent = cl.cat;
+        hoverLabelEl.style.opacity = "1";
+      }
+    } else {
+      hoverLabelEl.style.opacity = "0";
+    }
+  }
+
+  /* Position hover label at mouse */
+  if (hoveredZone) {
+    hoverLabelEl.style.left = evt.clientX + "px";
+    hoverLabelEl.style.top = evt.clientY + "px";
+  }
+};
+
+/* Click on zone disc opens the panel */
+scene.onPointerDown = function(evt) {
+  if (!entered) return;
+  var pick = scene.pick(scene.pointerX, scene.pointerY, function(m) {
+    return m.name && m.name.indexOf("zdisc_") === 0;
+  });
+  if (pick && pick.hit && pick.pickedMesh && pick.pickedMesh.metadata) {
+    openPanel(pick.pickedMesh.metadata.zoneId);
+  }
+};
+
 /* LABELS */
 var hud = document.getElementById("hud");
 var lblEls = {};
@@ -339,7 +444,7 @@ document.getElementById("pClose").addEventListener("click", function() {
 
 /* MINIMAP */
 var mmCtx = document.getElementById("mmC").getContext("2d");
-var SC = 130 / 200;
+var SC = 130 / 220;
 function drawMM() {
   mmCtx.clearRect(0, 0, 130, 130);
   mmCtx.fillStyle = "rgba(13,10,6,.92)";
@@ -680,6 +785,23 @@ scene.registerBeforeRender(function() {
   if (!entered) return;
   var dt = engine.getDeltaTime() / 1000;
   animTime += dt;
+
+  /* --- Zone highlight smooth fade --- */
+  Object.keys(zoneDiscs).forEach(function(k) {
+    var zd = zoneDiscs[k];
+    if (Math.abs(zd.currentAlpha - zd.targetAlpha) > 0.002) {
+      zd.currentAlpha += (zd.targetAlpha - zd.currentAlpha) * Math.min(1, 6 * dt);
+      zd.mat.alpha = zd.currentAlpha;
+      /* Pulse glow when highlighted */
+      if (zd.targetAlpha > 0) {
+        var pulse = 0.03 * Math.sin(animTime * 3);
+        zd.mat.alpha = zd.currentAlpha + pulse;
+        zd.mat.emissiveColor = new BABYLON.Color3(
+          0.25 + pulse * 2, 0.18 + pulse, 0.05
+        );
+      }
+    }
+  });
 
   /* --- Day/Night smooth transition --- */
   if (Math.abs(dnLerp - dnTarget) > 0.001) {
