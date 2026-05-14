@@ -387,6 +387,207 @@ document.getElementById("enterBtn").addEventListener("click", function() {
     entered = true;
   }, 500);
 });
+
+/* ============================================================
+   ANIMATED PEOPLE — Walking around the Kaaba
+   Simple low-poly figures on circular paths at varying speeds
+   ============================================================ */
+var people = [];
+var PEOPLE_COUNT = 18;
+var personMat = new BABYLON.StandardMaterial("personMat", scene);
+personMat.diffuseColor = new BABYLON.Color3(0.65, 0.55, 0.40);
+personMat.specularColor = new BABYLON.Color3(0.1, 0.08, 0.05);
+
+var personDarkMat = new BABYLON.StandardMaterial("personDarkMat", scene);
+personDarkMat.diffuseColor = new BABYLON.Color3(0.45, 0.35, 0.25);
+personDarkMat.specularColor = new BABYLON.Color3(0.08, 0.06, 0.04);
+
+var headMat = new BABYLON.StandardMaterial("headMat", scene);
+headMat.diffuseColor = new BABYLON.Color3(0.55, 0.40, 0.30);
+headMat.specularColor = new BABYLON.Color3(0.05, 0.04, 0.03);
+
+for (var pi = 0; pi < PEOPLE_COUNT; pi++) {
+  /* Each person: a cone body + sphere head, parented to a root */
+  var root = new BABYLON.TransformNode("person_" + pi, scene);
+
+  /* Robe / body — tapered cone */
+  var body = BABYLON.MeshBuilder.CreateCylinder("pbody_" + pi, {
+    diameterTop: 0.4, diameterBottom: 1.1, height: 2.0, tessellation: 8
+  }, scene);
+  body.material = (pi % 3 === 0) ? personDarkMat : personMat;
+  body.parent = root;
+  body.position.y = 1.0;
+
+  /* Head */
+  var head = BABYLON.MeshBuilder.CreateSphere("phead_" + pi, {
+    diameter: 0.45, segments: 6
+  }, scene);
+  head.material = headMat;
+  head.parent = root;
+  head.position.y = 2.3;
+
+  /* Kufiya headwrap hint */
+  var wrap = BABYLON.MeshBuilder.CreateCylinder("pwrap_" + pi, {
+    diameterTop: 0.3, diameterBottom: 0.55, height: 0.2, tessellation: 6
+  }, scene);
+  wrap.material = personMat;
+  wrap.parent = root;
+  wrap.position.y = 2.55;
+
+  /* Shadow caster */
+  try { sg.addShadowCaster(body); } catch(e) {}
+
+  /* Movement params — circular paths around Kaaba */
+  var radius = 10 + Math.random() * 20;       /* 10–30m from center */
+  var speed = 0.08 + Math.random() * 0.12;     /* varied walking speed */
+  var startAngle = Math.random() * Math.PI * 2; /* random start position */
+  var direction = (pi % 4 === 0) ? -1 : 1;     /* most go counter-clockwise */
+  var bobSpeed = 2.5 + Math.random() * 1.5;    /* head bob frequency */
+  var bobAmount = 0.04 + Math.random() * 0.03; /* head bob amount */
+
+  people.push({
+    root: root,
+    body: body,
+    head: head,
+    radius: radius,
+    speed: speed,
+    angle: startAngle,
+    dir: direction,
+    bobSpd: bobSpeed,
+    bobAmt: bobAmount
+  });
+}
+
+/* ============================================================
+   BIRDS — Circling overhead
+   Simple dark triangular shapes gliding in circles
+   ============================================================ */
+var birds = [];
+var BIRD_COUNT = 9;
+
+var birdMat = new BABYLON.StandardMaterial("birdMat", scene);
+birdMat.diffuseColor = new BABYLON.Color3(0.12, 0.08, 0.05);
+birdMat.specularColor = BABYLON.Color3.Black();
+birdMat.emissiveColor = new BABYLON.Color3(0.06, 0.04, 0.02);
+
+for (var bi = 0; bi < BIRD_COUNT; bi++) {
+  /* Each bird: two flat triangles for wings */
+  var birdRoot = new BABYLON.TransformNode("bird_" + bi, scene);
+
+  /* Left wing */
+  var lwing = BABYLON.MeshBuilder.CreateDisc("blw_" + bi, {
+    radius: 0.5, tessellation: 3, sideOrientation: BABYLON.Mesh.DOUBLESIDE
+  }, scene);
+  lwing.material = birdMat;
+  lwing.parent = birdRoot;
+  lwing.rotation.x = Math.PI / 2;
+  lwing.rotation.z = 0.15;
+  lwing.position.x = -0.3;
+  lwing.scaling = new BABYLON.Vector3(1.2, 0.4, 1);
+
+  /* Right wing */
+  var rwing = BABYLON.MeshBuilder.CreateDisc("brw_" + bi, {
+    radius: 0.5, tessellation: 3, sideOrientation: BABYLON.Mesh.DOUBLESIDE
+  }, scene);
+  rwing.material = birdMat;
+  rwing.parent = birdRoot;
+  rwing.rotation.x = Math.PI / 2;
+  rwing.rotation.z = -0.15;
+  rwing.position.x = 0.3;
+  rwing.scaling = new BABYLON.Vector3(1.2, 0.4, 1);
+
+  /* Bird body (tiny cylinder) */
+  var bbody = BABYLON.MeshBuilder.CreateCylinder("bbd_" + bi, {
+    diameter: 0.12, height: 0.6, tessellation: 4
+  }, scene);
+  bbody.material = birdMat;
+  bbody.parent = birdRoot;
+  bbody.rotation.z = Math.PI / 2;
+
+  /* Flight params */
+  var bRadius = 15 + Math.random() * 45;
+  var bHeight = 25 + Math.random() * 30;
+  var bSpeed = 0.15 + Math.random() * 0.25;
+  var bStartAngle = Math.random() * Math.PI * 2;
+  var bDir = (bi % 2 === 0) ? 1 : -1;
+  var bDrift = Math.random() * 0.3;           /* vertical bobbing */
+  var bDriftSpd = 0.3 + Math.random() * 0.4;
+  var bBankAmount = 0.2 + Math.random() * 0.15; /* banking into turns */
+
+  birds.push({
+    root: birdRoot,
+    lwing: lwing,
+    rwing: rwing,
+    radius: bRadius,
+    height: bHeight,
+    speed: bSpeed,
+    angle: bStartAngle,
+    dir: bDir,
+    drift: bDrift,
+    driftSpd: bDriftSpd,
+    bank: bBankAmount
+  });
+}
+
+/* ============================================================
+   ANIMATION LOOP — update people + birds each frame
+   ============================================================ */
+var animTime = 0;
+scene.registerBeforeRender(function() {
+  if (!entered) return;
+  var dt = engine.getDeltaTime() / 1000;
+  animTime += dt;
+
+  /* --- Animate People --- */
+  for (var i = 0; i < people.length; i++) {
+    var p = people[i];
+    p.angle += p.speed * dt * p.dir;
+
+    /* Position on circular path */
+    var px = Math.cos(p.angle) * p.radius;
+    var pz = Math.sin(p.angle) * p.radius;
+    p.root.position.x = px;
+    p.root.position.z = pz;
+    p.root.position.y = 0;
+
+    /* Face walking direction (tangent to circle) */
+    var facing = p.angle + (p.dir > 0 ? Math.PI / 2 : -Math.PI / 2);
+    p.root.rotation.y = -facing;
+
+    /* Walking bob — subtle up-down */
+    p.body.position.y = 1.0 + Math.abs(Math.sin(animTime * p.bobSpd)) * p.bobAmt;
+    p.head.position.y = 2.3 + Math.abs(Math.sin(animTime * p.bobSpd)) * p.bobAmt;
+
+    /* Slight body sway */
+    p.body.rotation.z = Math.sin(animTime * p.bobSpd * 0.5) * 0.03;
+  }
+
+  /* --- Animate Birds --- */
+  for (var j = 0; j < birds.length; j++) {
+    var b = birds[j];
+    b.angle += b.speed * dt * b.dir;
+
+    var bx = Math.cos(b.angle) * b.radius;
+    var bz = Math.sin(b.angle) * b.radius;
+    var by = b.height + Math.sin(animTime * b.driftSpd) * b.drift;
+
+    b.root.position.x = bx;
+    b.root.position.z = bz;
+    b.root.position.y = by;
+
+    /* Face flight direction */
+    var bfacing = b.angle + (b.dir > 0 ? Math.PI / 2 : -Math.PI / 2);
+    b.root.rotation.y = -bfacing;
+
+    /* Bank into turns */
+    b.root.rotation.z = b.bank * b.dir;
+
+    /* Wing flap — gentle oscillation */
+    var flapAngle = Math.sin(animTime * 1.8 + j * 2) * 0.25;
+    b.lwing.rotation.z = 0.15 + flapAngle;
+    b.rwing.rotation.z = -0.15 - flapAngle;
+  }
+});
 </script>
 </body>
 </html>
