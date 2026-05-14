@@ -501,6 +501,94 @@ for (var bi = 0; bi < BIRD_COUNT; bi++) {
    DAY / NIGHT SYSTEM
    Smoothly transitions all lighting, sky, fog, post-processing
    ============================================================ */
+
+/* ============================================================
+   PEOPLE — Small dark figure silhouettes wandering the city
+   Tiny scale, spread across Makkah, various movement patterns
+   ============================================================ */
+var walkers = [];
+var WALKER_COUNT = 20;
+
+var figMat = new BABYLON.StandardMaterial("figMat", scene);
+figMat.diffuseColor = new BABYLON.Color3(0.10, 0.08, 0.06);
+figMat.specularColor = BABYLON.Color3.Black();
+
+for (var wi = 0; wi < WALKER_COUNT; wi++) {
+  var figRoot = new BABYLON.TransformNode("walker_" + wi, scene);
+
+  /* Body — small tapered cylinder */
+  var figBody = BABYLON.MeshBuilder.CreateCylinder("wbody_" + wi, {
+    diameterTop: 0.25, diameterBottom: 0.55, height: 1.4, tessellation: 6
+  }, scene);
+  figBody.material = figMat;
+  figBody.parent = figRoot;
+  figBody.position.y = 0.7;
+
+  /* Head — small sphere */
+  var figHead = BABYLON.MeshBuilder.CreateSphere("whead_" + wi, {
+    diameter: 0.3, segments: 5
+  }, scene);
+  figHead.material = figMat;
+  figHead.parent = figRoot;
+  figHead.position.y = 1.55;
+
+  /* Assign a movement type:
+     - type 0: circular around Kaaba (inner, like tawaf)
+     - type 1: circular around Kaaba (wider ring)
+     - type 2: wander between districts (random waypoints)
+     - type 3: walk along a straight market path
+  */
+  var mtype = wi % 4;
+  var wdata = {};
+
+  if (mtype === 0) {
+    /* Tight circle around Kaaba */
+    wdata.mode = "circle";
+    wdata.radius = 8 + Math.random() * 6;
+    wdata.speed = 0.12 + Math.random() * 0.08;
+    wdata.angle = Math.random() * Math.PI * 2;
+    wdata.dir = -1; /* counter-clockwise */
+    wdata.cx = 0; wdata.cz = 0;
+  } else if (mtype === 1) {
+    /* Wider circle, walking around the town */
+    wdata.mode = "circle";
+    wdata.radius = 20 + Math.random() * 25;
+    wdata.speed = 0.06 + Math.random() * 0.06;
+    wdata.angle = Math.random() * Math.PI * 2;
+    wdata.dir = (Math.random() > 0.5) ? 1 : -1;
+    wdata.cx = (Math.random() - 0.5) * 15;
+    wdata.cz = (Math.random() - 0.5) * 15;
+  } else if (mtype === 2) {
+    /* Random waypoint wanderer */
+    wdata.mode = "wander";
+    wdata.speed = 1.5 + Math.random() * 1.5;
+    wdata.px = (Math.random() - 0.5) * 80;
+    wdata.pz = (Math.random() - 0.5) * 80;
+    wdata.tx = (Math.random() - 0.5) * 80;
+    wdata.tz = (Math.random() - 0.5) * 80;
+    wdata.wait = 0;
+  } else {
+    /* Straight path walker (market road) */
+    wdata.mode = "path";
+    wdata.speed = 1.8 + Math.random() * 1.2;
+    var pathAngle = Math.random() * Math.PI * 2;
+    wdata.ax = Math.cos(pathAngle); wdata.az = Math.sin(pathAngle);
+    wdata.px = (Math.random() - 0.5) * 60;
+    wdata.pz = (Math.random() - 0.5) * 60;
+    wdata.dist = 0;
+    wdata.maxDist = 30 + Math.random() * 40;
+    wdata.dir = 1;
+  }
+
+  wdata.bobSpd = 4 + Math.random() * 2;
+  wdata.bobAmt = 0.03 + Math.random() * 0.02;
+
+  walkers.push({ root: figRoot, body: figBody, head: figHead, d: wdata });
+}
+
+/* ============================================================
+   DAY / NIGHT SYSTEM (continued)
+   ============================================================ */
 var isNight = false;
 var dnLerp = 0;       /* 0 = full day, 1 = full night */
 var dnTarget = 0;
@@ -714,6 +802,57 @@ scene.registerBeforeRender(function() {
     var flapAngle = Math.sin(animTime * 1.8 + j * 2) * 0.25;
     b.lwing.rotation.z = 0.15 + flapAngle;
     b.rwing.rotation.z = -0.15 - flapAngle;
+  }
+
+  /* --- Animate Walkers --- */
+  for (var w = 0; w < walkers.length; w++) {
+    var wk = walkers[w];
+    var wd = wk.d;
+
+    if (wd.mode === "circle") {
+      wd.angle += wd.speed * dt * wd.dir;
+      var wx = wd.cx + Math.cos(wd.angle) * wd.radius;
+      var wz = wd.cz + Math.sin(wd.angle) * wd.radius;
+      wk.root.position.x = wx;
+      wk.root.position.z = wz;
+      var wface = wd.angle + (wd.dir > 0 ? Math.PI / 2 : -Math.PI / 2);
+      wk.root.rotation.y = -wface;
+
+    } else if (wd.mode === "wander") {
+      if (wd.wait > 0) {
+        wd.wait -= dt;
+      } else {
+        var ddx = wd.tx - wd.px;
+        var ddz = wd.tz - wd.pz;
+        var dd = Math.sqrt(ddx * ddx + ddz * ddz);
+        if (dd < 1.0) {
+          /* Reached target, pick new one and pause briefly */
+          wd.tx = (Math.random() - 0.5) * 80;
+          wd.tz = (Math.random() - 0.5) * 80;
+          wd.wait = 0.5 + Math.random() * 2.0;
+        } else {
+          var step = wd.speed * dt;
+          wd.px += (ddx / dd) * step;
+          wd.pz += (ddz / dd) * step;
+          wk.root.rotation.y = -Math.atan2(ddz, ddx) + Math.PI / 2;
+        }
+      }
+      wk.root.position.x = wd.px;
+      wk.root.position.z = wd.pz;
+
+    } else if (wd.mode === "path") {
+      wd.dist += wd.speed * dt * wd.dir;
+      if (Math.abs(wd.dist) > wd.maxDist) { wd.dir *= -1; }
+      wk.root.position.x = wd.px + wd.ax * wd.dist;
+      wk.root.position.z = wd.pz + wd.az * wd.dist;
+      wk.root.rotation.y = -Math.atan2(wd.az * wd.dir, wd.ax * wd.dir) + Math.PI / 2;
+    }
+
+    wk.root.position.y = 0;
+    /* Walking bob */
+    var bob = Math.abs(Math.sin(animTime * wd.bobSpd)) * wd.bobAmt;
+    wk.body.position.y = 0.7 + bob;
+    wk.head.position.y = 1.55 + bob;
   }
 });
 </script>
