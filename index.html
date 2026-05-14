@@ -385,9 +385,24 @@ scene.onPointerMove = function(evt) {
   }
 };
 
-/* Click on zone disc opens the panel */
+/* Click on zone disc opens the panel — but ONLY on clean clicks, not drags */
+var pointerDownPos = null;
+var pointerDownTime = 0;
 scene.onPointerDown = function(evt) {
-  if (!entered) return;
+  pointerDownPos = { x: evt.clientX, y: evt.clientY };
+  pointerDownTime = Date.now();
+};
+scene.onPointerUp = function(evt) {
+  if (!entered || !pointerDownPos) return;
+  var dx = evt.clientX - pointerDownPos.x;
+  var dy = evt.clientY - pointerDownPos.y;
+  var dist = Math.sqrt(dx * dx + dy * dy);
+  var elapsed = Date.now() - pointerDownTime;
+  pointerDownPos = null;
+
+  /* Only count as a click if mouse moved less than 5px and took less than 300ms */
+  if (dist > 5 || elapsed > 300) return;
+
   var pick = scene.pick(scene.pointerX, scene.pointerY, function(m) {
     return m.name && m.name.indexOf("zdisc_") === 0;
   });
