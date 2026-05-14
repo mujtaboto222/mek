@@ -80,6 +80,17 @@ canvas#c{width:100%;height:100%;display:block;touch-action:none;outline:none}
 #dnToggle.day .dn-night{right:7px;opacity:.5;color:var(--dim)}
 #dnToggle.night .dn-night{opacity:0}
 #dnToggle.night .dn-day{left:5px;opacity:.5;color:var(--dim)}
+#lblToggle{position:fixed;top:1.4rem;left:5.2rem;z-index:160;pointer-events:all;background:rgba(10,7,4,.75);border:1px solid rgba(212,168,67,.35);border-radius:28px;padding:0;width:56px;height:28px;cursor:pointer;transition:all .4s;display:flex;align-items:center;overflow:hidden}
+#lblToggle:hover{border-color:var(--gold);background:rgba(10,7,4,.9)}
+#lblToggle .lt-track{width:100%;height:100%;position:relative;border-radius:28px}
+#lblToggle .lt-thumb{position:absolute;top:3px;width:22px;height:22px;border-radius:50%;transition:all .4s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--night)}
+#lblToggle.on .lt-thumb{left:31px;background:linear-gradient(135deg,var(--gold-l),var(--gold));box-shadow:0 0 10px rgba(212,168,67,.4)}
+#lblToggle.off .lt-thumb{left:3px;background:rgba(255,255,255,.15);box-shadow:none;color:var(--dim)}
+#lblToggle .lt-label{position:absolute;font-family:'Cinzel',serif;font-size:.38rem;letter-spacing:.08em;text-transform:uppercase;top:50%;transform:translateY(-50%);transition:opacity .3s}
+#lblToggle.on .lt-on{opacity:0}
+#lblToggle.on .lt-off{right:5px;opacity:.4;color:var(--dim)}
+#lblToggle.off .lt-off{opacity:0}
+#lblToggle.off .lt-on{left:30px;opacity:.4;color:var(--dim)}
 </style>
 </head>
 <body>
@@ -112,6 +123,14 @@ canvas#c{width:100%;height:100%;display:block;touch-action:none;outline:none}
     <span class="dn-label dn-day">☀</span>
     <span class="dn-label dn-night">☽</span>
     <div class="dn-thumb">☀</div>
+  </div>
+</button>
+
+<button id="lblToggle" class="on">
+  <div class="lt-track">
+    <span class="lt-label lt-on">Abc</span>
+    <span class="lt-label lt-off">Abc</span>
+    <div class="lt-thumb">Aa</div>
   </div>
 </button>
 
@@ -182,7 +201,7 @@ cam.lowerRadiusLimit = 55;
 cam.upperRadiusLimit = 180;
 cam.lowerBetaLimit = 0.25;
 cam.upperBetaLimit = Math.PI / 2.05;
-cam.wheelPrecision = 5;
+cam.wheelPrecision = 2;
 cam.panningSensibility = 0;
 cam.angularSensibilityX = 500;
 cam.angularSensibilityY = 500;
@@ -370,6 +389,7 @@ scene.registerAfterRender(function() {
   ZONES.forEach(function(z) {
     var el = lblEls[z.id];
     if (!el) return;
+    if (!labelsOn) { el.classList.remove("vis"); return; }
     var cp = cam.position;
     var dist = Math.sqrt((cp.x - z.x) * (cp.x - z.x) + (cp.z - z.z) * (cp.z - z.z));
     if (dist > 200) { el.classList.remove("vis"); return; }
@@ -423,7 +443,7 @@ document.getElementById("enterBtn").addEventListener("click", function() {
    BIRDS — Circling overhead
    ============================================================ */
 var birds = [];
-var BIRD_COUNT = 11;
+var BIRD_COUNT = 18;
 
 var birdMat = new BABYLON.StandardMaterial("birdMat", scene);
 birdMat.diffuseColor = new BABYLON.Color3(0.12, 0.08, 0.05);
@@ -623,7 +643,7 @@ function applyDayNight(t) {
 
   /* Bird visibility — fewer visible at night */
   for (var bv = 0; bv < birds.length; bv++) {
-    birds[bv].root.setEnabled(t < 0.7 || bv < 3);
+    birds[bv].root.setEnabled(t < 0.7 || bv < 4);
   }
 }
 
@@ -634,6 +654,22 @@ toggleBtn.addEventListener("click", function() {
   dnTarget = isNight ? 1 : 0;
   toggleBtn.className = isNight ? "night" : "day";
   toggleBtn.querySelector(".dn-thumb").textContent = isNight ? "☽" : "☀";
+});
+
+/* Labels toggle */
+var labelsOn = true;
+var lblToggleBtn = document.getElementById("lblToggle");
+lblToggleBtn.addEventListener("click", function() {
+  labelsOn = !labelsOn;
+  lblToggleBtn.className = labelsOn ? "on" : "off";
+  /* Immediately show/hide all labels */
+  Object.keys(lblEls).forEach(function(k) {
+    if (!labelsOn) {
+      lblEls[k].style.display = "none";
+    } else {
+      lblEls[k].style.display = "";
+    }
+  });
 });
 
 /* ============================================================
