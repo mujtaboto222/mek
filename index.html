@@ -69,6 +69,17 @@ canvas#c{width:100%;height:100%;display:block;touch-action:none;outline:none}
 .mm-l{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);font-family:'Cinzel',serif;font-size:.48rem;color:var(--dim);letter-spacing:.15em;text-transform:uppercase}
 #panel::-webkit-scrollbar{width:3px}
 #panel::-webkit-scrollbar-thumb{background:rgba(212,168,67,.22);border-radius:2px}
+#dnToggle{position:fixed;top:1.4rem;left:1.4rem;z-index:160;pointer-events:all;background:rgba(10,7,4,.75);border:1px solid rgba(212,168,67,.35);border-radius:28px;padding:0;width:56px;height:28px;cursor:pointer;transition:all .5s;display:flex;align-items:center;overflow:hidden}
+#dnToggle:hover{border-color:var(--gold);background:rgba(10,7,4,.9)}
+#dnToggle .dn-track{width:100%;height:100%;position:relative;border-radius:28px}
+#dnToggle .dn-thumb{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;transition:all .5s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;justify-content:center;font-size:12px}
+#dnToggle.day .dn-thumb{left:3px;background:linear-gradient(135deg,#f0c96a,#d4a843);box-shadow:0 0 12px rgba(240,200,100,.5)}
+#dnToggle.night .dn-thumb{left:31px;background:linear-gradient(135deg,#8090b8,#506088);box-shadow:0 0 12px rgba(120,140,200,.4)}
+#dnToggle .dn-label{position:absolute;font-family:'Cinzel',serif;font-size:.42rem;letter-spacing:.1em;text-transform:uppercase;top:50%;transform:translateY(-50%);transition:opacity .3s}
+#dnToggle.day .dn-day{opacity:0}
+#dnToggle.day .dn-night{right:7px;opacity:.5;color:var(--dim)}
+#dnToggle.night .dn-night{opacity:0}
+#dnToggle.night .dn-day{left:5px;opacity:.5;color:var(--dim)}
 </style>
 </head>
 <body>
@@ -95,6 +106,14 @@ canvas#c{width:100%;height:100%;display:block;touch-action:none;outline:none}
 </div>
 
 <canvas id="c"></canvas>
+
+<button id="dnToggle" class="day">
+  <div class="dn-track">
+    <span class="dn-label dn-day">☀</span>
+    <span class="dn-label dn-night">☽</span>
+    <div class="dn-thumb">☀</div>
+  </div>
+</button>
 
 <div id="hud">
   <div class="compass"><div class="co"><div class="cn">N</div><div class="cs2">S</div><div class="cneedle" id="needle"></div></div></div>
@@ -389,78 +408,7 @@ document.getElementById("enterBtn").addEventListener("click", function() {
 });
 
 /* ============================================================
-   ANIMATED PEOPLE — Walking around the Kaaba
-   Simple low-poly figures on circular paths at varying speeds
-   ============================================================ */
-var people = [];
-var PEOPLE_COUNT = 18;
-var personMat = new BABYLON.StandardMaterial("personMat", scene);
-personMat.diffuseColor = new BABYLON.Color3(0.65, 0.55, 0.40);
-personMat.specularColor = new BABYLON.Color3(0.1, 0.08, 0.05);
-
-var personDarkMat = new BABYLON.StandardMaterial("personDarkMat", scene);
-personDarkMat.diffuseColor = new BABYLON.Color3(0.45, 0.35, 0.25);
-personDarkMat.specularColor = new BABYLON.Color3(0.08, 0.06, 0.04);
-
-var headMat = new BABYLON.StandardMaterial("headMat", scene);
-headMat.diffuseColor = new BABYLON.Color3(0.55, 0.40, 0.30);
-headMat.specularColor = new BABYLON.Color3(0.05, 0.04, 0.03);
-
-for (var pi = 0; pi < PEOPLE_COUNT; pi++) {
-  /* Each person: a cone body + sphere head, parented to a root */
-  var root = new BABYLON.TransformNode("person_" + pi, scene);
-
-  /* Robe / body — tapered cone */
-  var body = BABYLON.MeshBuilder.CreateCylinder("pbody_" + pi, {
-    diameterTop: 0.4, diameterBottom: 1.1, height: 2.0, tessellation: 8
-  }, scene);
-  body.material = (pi % 3 === 0) ? personDarkMat : personMat;
-  body.parent = root;
-  body.position.y = 1.0;
-
-  /* Head */
-  var head = BABYLON.MeshBuilder.CreateSphere("phead_" + pi, {
-    diameter: 0.45, segments: 6
-  }, scene);
-  head.material = headMat;
-  head.parent = root;
-  head.position.y = 2.3;
-
-  /* Kufiya headwrap hint */
-  var wrap = BABYLON.MeshBuilder.CreateCylinder("pwrap_" + pi, {
-    diameterTop: 0.3, diameterBottom: 0.55, height: 0.2, tessellation: 6
-  }, scene);
-  wrap.material = personMat;
-  wrap.parent = root;
-  wrap.position.y = 2.55;
-
-  /* Shadow caster */
-  try { sg.addShadowCaster(body); } catch(e) {}
-
-  /* Movement params — circular paths around Kaaba */
-  var radius = 10 + Math.random() * 20;       /* 10–30m from center */
-  var speed = 0.08 + Math.random() * 0.12;     /* varied walking speed */
-  var startAngle = Math.random() * Math.PI * 2; /* random start position */
-  var direction = (pi % 4 === 0) ? -1 : 1;     /* most go counter-clockwise */
-  var bobSpeed = 2.5 + Math.random() * 1.5;    /* head bob frequency */
-  var bobAmount = 0.04 + Math.random() * 0.03; /* head bob amount */
-
-  people.push({
-    root: root,
-    body: body,
-    head: head,
-    radius: radius,
-    speed: speed,
-    angle: startAngle,
-    dir: direction,
-    bobSpd: bobSpeed,
-    bobAmt: bobAmount
-  });
-}
-
-/* ============================================================
    BIRDS — Circling overhead
-   Simple dark triangular shapes gliding in circles
    ============================================================ */
 var birds = [];
 var BIRD_COUNT = 9;
@@ -471,10 +419,8 @@ birdMat.specularColor = BABYLON.Color3.Black();
 birdMat.emissiveColor = new BABYLON.Color3(0.06, 0.04, 0.02);
 
 for (var bi = 0; bi < BIRD_COUNT; bi++) {
-  /* Each bird: two flat triangles for wings */
   var birdRoot = new BABYLON.TransformNode("bird_" + bi, scene);
 
-  /* Left wing */
   var lwing = BABYLON.MeshBuilder.CreateDisc("blw_" + bi, {
     radius: 0.5, tessellation: 3, sideOrientation: BABYLON.Mesh.DOUBLESIDE
   }, scene);
@@ -485,7 +431,6 @@ for (var bi = 0; bi < BIRD_COUNT; bi++) {
   lwing.position.x = -0.3;
   lwing.scaling = new BABYLON.Vector3(1.2, 0.4, 1);
 
-  /* Right wing */
   var rwing = BABYLON.MeshBuilder.CreateDisc("brw_" + bi, {
     radius: 0.5, tessellation: 3, sideOrientation: BABYLON.Mesh.DOUBLESIDE
   }, scene);
@@ -496,7 +441,6 @@ for (var bi = 0; bi < BIRD_COUNT; bi++) {
   rwing.position.x = 0.3;
   rwing.scaling = new BABYLON.Vector3(1.2, 0.4, 1);
 
-  /* Bird body (tiny cylinder) */
   var bbody = BABYLON.MeshBuilder.CreateCylinder("bbd_" + bi, {
     diameter: 0.12, height: 0.6, tessellation: 4
   }, scene);
@@ -504,33 +448,177 @@ for (var bi = 0; bi < BIRD_COUNT; bi++) {
   bbody.parent = birdRoot;
   bbody.rotation.z = Math.PI / 2;
 
-  /* Flight params */
   var bRadius = 15 + Math.random() * 45;
   var bHeight = 25 + Math.random() * 30;
   var bSpeed = 0.15 + Math.random() * 0.25;
   var bStartAngle = Math.random() * Math.PI * 2;
   var bDir = (bi % 2 === 0) ? 1 : -1;
-  var bDrift = Math.random() * 0.3;           /* vertical bobbing */
+  var bDrift = Math.random() * 0.3;
   var bDriftSpd = 0.3 + Math.random() * 0.4;
-  var bBankAmount = 0.2 + Math.random() * 0.15; /* banking into turns */
+  var bBankAmount = 0.2 + Math.random() * 0.15;
 
   birds.push({
-    root: birdRoot,
-    lwing: lwing,
-    rwing: rwing,
-    radius: bRadius,
-    height: bHeight,
-    speed: bSpeed,
-    angle: bStartAngle,
-    dir: bDir,
-    drift: bDrift,
-    driftSpd: bDriftSpd,
-    bank: bBankAmount
+    root: birdRoot, lwing: lwing, rwing: rwing,
+    radius: bRadius, height: bHeight, speed: bSpeed,
+    angle: bStartAngle, dir: bDir, drift: bDrift,
+    driftSpd: bDriftSpd, bank: bBankAmount
   });
 }
 
 /* ============================================================
-   ANIMATION LOOP — update people + birds each frame
+   DAY / NIGHT SYSTEM
+   Smoothly transitions all lighting, sky, fog, post-processing
+   ============================================================ */
+var isNight = false;
+var dnLerp = 0;       /* 0 = full day, 1 = full night */
+var dnTarget = 0;
+var dnSpeed = 0.6;     /* transition speed (takes ~1.7s) */
+
+/* Store day & night presets */
+var DAY = {
+  sunDir:      new BABYLON.Vector3(-0.4, -0.6, 0.2),
+  sunInt:      2.8,
+  sunDiffuse:  new BABYLON.Color3(1.0, 0.76, 0.38),
+  sunSpec:     new BABYLON.Color3(0.4, 0.25, 0.1),
+  hemiInt:     0.65,
+  hemiDiffuse: new BABYLON.Color3(0.85, 0.65, 0.42),
+  hemiGround:  new BABYLON.Color3(0.5, 0.32, 0.18),
+  fogColor:    new BABYLON.Color3(0.68, 0.48, 0.28),
+  fogStart:    80,
+  fogEnd:      250,
+  clearColor:  new BABYLON.Color4(0.58, 0.42, 0.24, 1),
+  exposure:    1.08,
+  contrast:    1.1,
+  bloomWeight: 0.22,
+  shadowDark:  0.45
+};
+
+var NIGHT = {
+  sunDir:      new BABYLON.Vector3(0.1, -0.8, -0.3),
+  sunInt:      0.35,
+  sunDiffuse:  new BABYLON.Color3(0.25, 0.30, 0.55),
+  sunSpec:     new BABYLON.Color3(0.05, 0.06, 0.12),
+  hemiInt:     0.18,
+  hemiDiffuse: new BABYLON.Color3(0.15, 0.18, 0.35),
+  hemiGround:  new BABYLON.Color3(0.06, 0.05, 0.10),
+  fogColor:    new BABYLON.Color3(0.05, 0.04, 0.10),
+  fogStart:    50,
+  fogEnd:      200,
+  clearColor:  new BABYLON.Color4(0.04, 0.03, 0.08, 1),
+  exposure:    0.85,
+  contrast:    1.25,
+  bloomWeight: 0.45,
+  shadowDark:  0.75
+};
+
+/* Night sky texture (stars + moon glow) */
+var nightSkyTex = new BABYLON.DynamicTexture("nightSkyTex", {width:256, height:256}, scene, false);
+var nightCtx = nightSkyTex.getContext();
+/* Deep night gradient */
+var ng = nightCtx.createLinearGradient(0, 256, 0, 0);
+ng.addColorStop(0, "#0a0812");
+ng.addColorStop(0.3, "#0c0a18");
+ng.addColorStop(0.6, "#101028");
+ng.addColorStop(0.85, "#0e0e22");
+ng.addColorStop(1, "#06050e");
+nightCtx.fillStyle = ng;
+nightCtx.fillRect(0, 0, 256, 256);
+/* Stars */
+nightCtx.fillStyle = "#ffffff";
+for (var si = 0; si < 120; si++) {
+  var sx2 = Math.random() * 256;
+  var sy2 = Math.random() * 200;
+  var sr = Math.random() * 1.2 + 0.3;
+  nightCtx.globalAlpha = Math.random() * 0.6 + 0.3;
+  nightCtx.beginPath();
+  nightCtx.arc(sx2, sy2, sr, 0, Math.PI * 2);
+  nightCtx.fill();
+}
+nightCtx.globalAlpha = 1;
+/* Moon glow */
+var moonG = nightCtx.createRadialGradient(190, 40, 0, 190, 40, 50);
+moonG.addColorStop(0, "rgba(220,225,255,0.95)");
+moonG.addColorStop(0.15, "rgba(180,190,230,0.5)");
+moonG.addColorStop(0.5, "rgba(100,110,180,0.15)");
+moonG.addColorStop(1, "rgba(50,50,100,0)");
+nightCtx.fillStyle = moonG;
+nightCtx.fillRect(0, 0, 256, 256);
+nightSkyTex.update();
+
+/* Keep reference to original day sky texture */
+var daySkyTex = skyTex;
+
+function lerpColor3(a, b, t) {
+  return new BABYLON.Color3(
+    a.r + (b.r - a.r) * t,
+    a.g + (b.g - a.g) * t,
+    a.b + (b.b - a.b) * t
+  );
+}
+function lerpColor4(a, b, t) {
+  return new BABYLON.Color4(
+    a.r + (b.r - a.r) * t,
+    a.g + (b.g - a.g) * t,
+    a.b + (b.b - a.b) * t,
+    1
+  );
+}
+function lerpVal(a, b, t) { return a + (b - a) * t; }
+
+function applyDayNight(t) {
+  /* Sun */
+  sun.direction = BABYLON.Vector3.Lerp(DAY.sunDir, NIGHT.sunDir, t);
+  sun.intensity = lerpVal(DAY.sunInt, NIGHT.sunInt, t);
+  sun.diffuse = lerpColor3(DAY.sunDiffuse, NIGHT.sunDiffuse, t);
+  sun.specular = lerpColor3(DAY.sunSpec, NIGHT.sunSpec, t);
+
+  /* Hemisphere */
+  hemi.intensity = lerpVal(DAY.hemiInt, NIGHT.hemiInt, t);
+  hemi.diffuse = lerpColor3(DAY.hemiDiffuse, NIGHT.hemiDiffuse, t);
+  hemi.groundColor = lerpColor3(DAY.hemiGround, NIGHT.hemiGround, t);
+
+  /* Fog */
+  scene.fogColor = lerpColor3(DAY.fogColor, NIGHT.fogColor, t);
+  scene.fogStart = lerpVal(DAY.fogStart, NIGHT.fogStart, t);
+  scene.fogEnd = lerpVal(DAY.fogEnd, NIGHT.fogEnd, t);
+
+  /* Clear color */
+  scene.clearColor = lerpColor4(DAY.clearColor, NIGHT.clearColor, t);
+
+  /* Post-processing */
+  pp.imageProcessing.exposure = lerpVal(DAY.exposure, NIGHT.exposure, t);
+  pp.imageProcessing.contrast = lerpVal(DAY.contrast, NIGHT.contrast, t);
+  pp.bloomWeight = lerpVal(DAY.bloomWeight, NIGHT.bloomWeight, t);
+
+  /* Shadows */
+  sg.setDarkness(lerpVal(DAY.shadowDark, NIGHT.shadowDark, t));
+
+  /* Sky texture crossfade — swap at midpoint */
+  if (t < 0.5) {
+    skyMat.emissiveTexture = daySkyTex;
+    skyMat.alpha = 1;
+  } else {
+    skyMat.emissiveTexture = nightSkyTex;
+    skyMat.alpha = 1;
+  }
+
+  /* Bird visibility — fewer visible at night, hide some */
+  for (var bv = 0; bv < birds.length; bv++) {
+    birds[bv].root.setEnabled(t < 0.7 || bv < 2);
+  }
+}
+
+/* Toggle button */
+var toggleBtn = document.getElementById("dnToggle");
+toggleBtn.addEventListener("click", function() {
+  isNight = !isNight;
+  dnTarget = isNight ? 1 : 0;
+  toggleBtn.className = isNight ? "night" : "day";
+  toggleBtn.querySelector(".dn-thumb").textContent = isNight ? "☽" : "☀";
+});
+
+/* ============================================================
+   ANIMATION LOOP — birds + day/night transition
    ============================================================ */
 var animTime = 0;
 scene.registerBeforeRender(function() {
@@ -538,33 +626,22 @@ scene.registerBeforeRender(function() {
   var dt = engine.getDeltaTime() / 1000;
   animTime += dt;
 
-  /* --- Animate People --- */
-  for (var i = 0; i < people.length; i++) {
-    var p = people[i];
-    p.angle += p.speed * dt * p.dir;
-
-    /* Position on circular path */
-    var px = Math.cos(p.angle) * p.radius;
-    var pz = Math.sin(p.angle) * p.radius;
-    p.root.position.x = px;
-    p.root.position.z = pz;
-    p.root.position.y = 0;
-
-    /* Face walking direction (tangent to circle) */
-    var facing = p.angle + (p.dir > 0 ? Math.PI / 2 : -Math.PI / 2);
-    p.root.rotation.y = -facing;
-
-    /* Walking bob — subtle up-down */
-    p.body.position.y = 1.0 + Math.abs(Math.sin(animTime * p.bobSpd)) * p.bobAmt;
-    p.head.position.y = 2.3 + Math.abs(Math.sin(animTime * p.bobSpd)) * p.bobAmt;
-
-    /* Slight body sway */
-    p.body.rotation.z = Math.sin(animTime * p.bobSpd * 0.5) * 0.03;
+  /* --- Day/Night smooth transition --- */
+  if (Math.abs(dnLerp - dnTarget) > 0.001) {
+    if (dnLerp < dnTarget) {
+      dnLerp = Math.min(dnLerp + dnSpeed * dt, dnTarget);
+    } else {
+      dnLerp = Math.max(dnLerp - dnSpeed * dt, dnTarget);
+    }
+    /* Ease in-out curve */
+    var eased = dnLerp * dnLerp * (3 - 2 * dnLerp);
+    applyDayNight(eased);
   }
 
   /* --- Animate Birds --- */
   for (var j = 0; j < birds.length; j++) {
     var b = birds[j];
+    if (!b.root.isEnabled()) continue;
     b.angle += b.speed * dt * b.dir;
 
     var bx = Math.cos(b.angle) * b.radius;
@@ -575,14 +652,10 @@ scene.registerBeforeRender(function() {
     b.root.position.z = bz;
     b.root.position.y = by;
 
-    /* Face flight direction */
     var bfacing = b.angle + (b.dir > 0 ? Math.PI / 2 : -Math.PI / 2);
     b.root.rotation.y = -bfacing;
-
-    /* Bank into turns */
     b.root.rotation.z = b.bank * b.dir;
 
-    /* Wing flap — gentle oscillation */
     var flapAngle = Math.sin(animTime * 1.8 + j * 2) * 0.25;
     b.lwing.rotation.z = 0.15 + flapAngle;
     b.rwing.rotation.z = -0.15 - flapAngle;
