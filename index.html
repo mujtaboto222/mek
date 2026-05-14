@@ -182,13 +182,11 @@ cam.lowerRadiusLimit = 55;
 cam.upperRadiusLimit = 180;
 cam.lowerBetaLimit = 0.25;
 cam.upperBetaLimit = Math.PI / 2.05;
-cam.wheelPrecision = 3;
-cam.wheelDeltaPercentage = 0.04;
+cam.wheelPrecision = 5;
 cam.panningSensibility = 0;
-cam.angularSensibilityX = 350;
-cam.angularSensibilityY = 350;
-cam.inertia = 0.82;
-cam.speed = 1.5;
+cam.angularSensibilityX = 500;
+cam.angularSensibilityY = 500;
+cam.inertia = 0.6;
 
 /* LIGHTING */
 var sun = new BABYLON.DirectionalLight("sun", new BABYLON.Vector3(-0.4, -0.6, 0.2), scene);
@@ -246,20 +244,17 @@ scene.fogStart = 80;
 scene.fogEnd = 250;
 
 /* POST-PROCESS */
-var pp = new BABYLON.DefaultRenderingPipeline("pp", true, scene, [cam]);
+var pp = new BABYLON.DefaultRenderingPipeline("pp", false, scene, [cam]);
 pp.fxaaEnabled = true;
-pp.samples = 4;
 pp.bloomEnabled = true;
 pp.bloomThreshold = 0.7;
 pp.bloomWeight = 0.22;
-pp.bloomKernel = 48;
-pp.bloomScale = 0.6;
+pp.bloomKernel = 32;
 pp.imageProcessingEnabled = true;
-pp.imageProcessing.toneMappingEnabled = true;
-pp.imageProcessing.toneMappingType = BABYLON.ImageProcessingConfiguration.TONEMAPPING_ACES;
-pp.imageProcessing.contrast = 1.12;
+pp.imageProcessing.contrast = 1.1;
 pp.imageProcessing.exposure = 1.08;
 pp.imageProcessing.vignetteEnabled = true;
+pp.imageProcessing.vignetteWeight = 1.8;
 pp.imageProcessing.vignetteWeight = 1.8;
 
 /* LOAD GLB */
@@ -505,33 +500,33 @@ var DAY = {
   fogEnd:      250,
   clearColor:  new BABYLON.Color4(0.58, 0.42, 0.24, 1),
   exposure:    1.08,
-  contrast:    1.12,
+  contrast:    1.1,
   bloomWeight: 0.22,
   bloomThresh: 0.7,
-  shadowDark:  0.35,
+  shadowDark:  0.4,
   shadowBias:  0.008,
   vignetteWt:  1.8
 };
 
 var NIGHT = {
   sunDir:      new BABYLON.Vector3(0.2, -0.7, -0.4),
-  sunInt:      0.55,
-  sunDiffuse:  new BABYLON.Color3(0.30, 0.35, 0.60),
-  sunSpec:     new BABYLON.Color3(0.08, 0.10, 0.20),
-  hemiInt:     0.12,
-  hemiDiffuse: new BABYLON.Color3(0.10, 0.12, 0.28),
-  hemiGround:  new BABYLON.Color3(0.04, 0.03, 0.08),
-  fogColor:    new BABYLON.Color3(0.04, 0.03, 0.08),
-  fogStart:    40,
-  fogEnd:      180,
-  clearColor:  new BABYLON.Color4(0.03, 0.02, 0.06, 1),
-  exposure:    0.80,
-  contrast:    1.30,
-  bloomWeight: 0.50,
-  bloomThresh: 0.4,
-  shadowDark:  0.72,
-  shadowBias:  0.012,
-  vignetteWt:  3.0
+  sunInt:      1.2,
+  sunDiffuse:  new BABYLON.Color3(0.40, 0.45, 0.70),
+  sunSpec:     new BABYLON.Color3(0.12, 0.14, 0.25),
+  hemiInt:     0.35,
+  hemiDiffuse: new BABYLON.Color3(0.20, 0.22, 0.40),
+  hemiGround:  new BABYLON.Color3(0.08, 0.07, 0.15),
+  fogColor:    new BABYLON.Color3(0.06, 0.05, 0.12),
+  fogStart:    60,
+  fogEnd:      220,
+  clearColor:  new BABYLON.Color4(0.05, 0.04, 0.10, 1),
+  exposure:    1.0,
+  contrast:    1.15,
+  bloomWeight: 0.38,
+  bloomThresh: 0.5,
+  shadowDark:  0.65,
+  shadowBias:  0.01,
+  vignetteWt:  2.5
 };
 
 /* Night sky texture (stars + moon glow) */
