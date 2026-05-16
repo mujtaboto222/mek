@@ -160,13 +160,13 @@ cam.lowerRadiusLimit = 55;
 cam.upperRadiusLimit = 180;
 cam.lowerBetaLimit = 0.25;
 cam.upperBetaLimit = Math.PI / 2.05;
-cam.wheelPrecision = 8;
-cam.panningSensibility = 150;
-cam.panningInertia = 0.5;
+cam.wheelPrecision = 4;
+cam.panningSensibility = 60;
+cam.panningInertia = 0.4;
 cam.inputs.attached.pointers.buttons = [0, 1, 2];
-cam.angularSensibilityX = 600;
-cam.angularSensibilityY = 600;
-cam.inertia = 0.55;
+cam.angularSensibilityX = 250;
+cam.angularSensibilityY = 250;
+cam.inertia = 0.3;
 
 /* LIGHTING */
 var sun = new BABYLON.DirectionalLight("sun", new BABYLON.Vector3(-0.4, -0.6, 0.2), scene);
