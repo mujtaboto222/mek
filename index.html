@@ -3,146 +3,152 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
-<title>Ancient Arabia — 600 CE</title>
+<title>Ancient Makkah — Walk Through History</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-:root {
-  --gold: #d4a843; --gold-l: #f0c96a; --sand: #e8d5b0;
-  --sand-d: #c4a96a; --night: #0d0a06; --dim: #a08060; --white: #faf6ee;
-}
-* { margin:0; padding:0; box-sizing:border-box; }
-html, body { width:100%; height:100%; overflow:hidden; background:#0d0a06; font-family:'Crimson Text',serif; color:var(--white); }
-#c { width:100%; height:100%; display:block; outline:none; }
-
-/* LOADER */
-#ld { position:fixed; inset:0; z-index:1000; background:var(--night);
-  display:flex; flex-direction:column; align-items:center; justify-content:center; transition:opacity 1s; }
-#ld.out { opacity:0; pointer-events:none; }
-.ld-t { font-family:'Cinzel',serif; font-size:clamp(1.8rem,4vw,3rem); color:var(--gold); letter-spacing:.15em; margin-bottom:.3em; }
-.ld-s { font-size:.82rem; color:var(--dim); letter-spacing:.35em; text-transform:uppercase; margin-bottom:2.2rem; }
-.ld-bw { width:220px; height:1px; background:rgba(255,255,255,.08); margin-bottom:1rem; }
-.ld-b { height:100%; width:0; background:linear-gradient(90deg,#8b5e3c,var(--gold)); transition:width .15s; }
-.ld-m { font-size:.75rem; color:var(--dim); letter-spacing:.08em; }
-
-/* INTRO */
-#intro { position:fixed; inset:0; z-index:900; display:flex; flex-direction:column;
-  align-items:center; justify-content:center;
-  background:radial-gradient(ellipse at 50% 55%, rgba(139,94,60,.18), rgba(13,10,6,.97) 65%);
-  opacity:0; pointer-events:none; transition:opacity .6s; }
-#intro.on { opacity:1; pointer-events:all; }
-.i-rule { width:70px; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:0 auto 1.8rem; }
-.i-t { font-family:'Cinzel',serif; font-size:clamp(2rem,5vw,3.8rem); font-weight:700; color:var(--gold-l);
-  text-align:center; line-height:1.1; margin-bottom:.3em; }
-.i-s { font-size:1.05rem; color:var(--sand); font-style:italic; text-align:center; margin-bottom:.4em; }
-.i-e { font-family:'Cinzel',serif; font-size:.68rem; color:var(--dim); letter-spacing:.35em; text-transform:uppercase; margin-bottom:2.5rem; }
-.cg { display:grid; grid-template-columns:1fr 1fr; gap:.65rem 2.2rem; margin-bottom:2.8rem; }
-.ci { display:flex; align-items:center; gap:.55rem; font-size:.85rem; color:var(--sand); }
-.ck { background:rgba(255,255,255,.07); border:1px solid rgba(212,168,67,.3); border-radius:3px;
-  padding:2px 7px; font-family:'Cinzel',serif; font-size:.68rem; color:var(--gold); min-width:32px; text-align:center; }
-.eb { font-family:'Cinzel',serif; font-size:.82rem; letter-spacing:.28em; text-transform:uppercase;
-  color:var(--night); background:linear-gradient(135deg,var(--gold),var(--sand-d)); border:none;
-  padding:.9rem 3rem; cursor:pointer; border-radius:2px; transition:transform .22s,box-shadow .22s; }
-.eb:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(212,168,67,.4); }
-
-/* HUD */
-#hud { position:fixed; inset:0; pointer-events:none; z-index:100; }
-.compass { position:absolute; top:1.4rem; right:1.4rem; width:58px; height:58px; }
-.co { width:100%; height:100%; border:1px solid rgba(212,168,67,.35); border-radius:50%;
-  display:flex; align-items:center; justify-content:center; position:relative; background:rgba(13,10,6,.55); }
-.cn { font-family:'Cinzel',serif; font-size:.55rem; color:var(--gold); position:absolute; top:4px; left:50%; transform:translateX(-50%); }
-.cs2 { font-family:'Cinzel',serif; font-size:.55rem; color:var(--dim); position:absolute; bottom:4px; left:50%; transform:translateX(-50%); }
-.cneedle { width:2px; height:20px; border-radius:1px; background:linear-gradient(to bottom,var(--gold) 50%,rgba(255,255,255,.2) 50%);
-  transition:transform .12s; transform-origin:center center; }
-.hint { position:absolute; bottom:1.2rem; right:1.4rem; font-size:.68rem; color:var(--dim); text-align:right; line-height:2; }
-.hint b { color:var(--sand); font-weight:400; }
-#zoom-label { position:absolute; bottom:1.2rem; left:50%; transform:translateX(-50%);
-  font-family:'Cinzel',serif; font-size:.65rem; letter-spacing:.25em; color:var(--gold);
-  opacity:0; transition:opacity .4s; text-transform:uppercase; }
-#zoom-label.on { opacity:1; }
-
-/* PANEL */
-#panel { position:fixed; top:0; right:-430px; width:410px; height:100%;
-  background:linear-gradient(160deg,#14100a,#0d0a06); border-left:1px solid rgba(212,168,67,.18);
-  z-index:200; overflow-y:auto; pointer-events:all; transition:right .45s cubic-bezier(.4,0,.2,1); }
-#panel.open { right:0; }
-@media(max-width:500px){ #panel { width:100%; right:-100%; } }
-.ph { height:120px; position:relative; overflow:hidden; background:linear-gradient(135deg,#3d2010,#1a0e06); }
-.ph-glow { position:absolute; inset:0; background:radial-gradient(ellipse at 30% 50%,rgba(212,168,67,.2),transparent 70%); }
-.pc { position:absolute; top:.9rem; right:.9rem; background:rgba(0,0,0,.4); border:1px solid rgba(255,255,255,.15);
-  border-radius:50%; color:var(--dim); width:26px; height:26px; cursor:pointer; font-size:.85rem;
-  display:flex; align-items:center; justify-content:center; transition:all .2s; pointer-events:all; }
-.pc:hover { color:var(--gold); border-color:var(--gold); }
-.pb { padding:1.6rem; }
-.p-cat { font-family:'Cinzel',serif; font-size:.58rem; letter-spacing:.35em; color:var(--gold); text-transform:uppercase; margin-bottom:.45rem; opacity:.8; }
-.p-tit { font-family:'Cinzel',serif; font-size:1.75rem; font-weight:700; color:var(--white); line-height:1.1; margin-bottom:.22rem; }
-.p-ar { font-size:1.2rem; color:var(--sand-d); font-style:italic; direction:rtl; margin-bottom:1.1rem; }
-.p-rl { width:32px; height:1px; background:linear-gradient(90deg,var(--gold),transparent); margin-bottom:1.3rem; }
-.p-sec { font-family:'Cinzel',serif; font-size:.58rem; letter-spacing:.22em; text-transform:uppercase; color:var(--gold); margin:1.4rem 0 .55rem; opacity:.75; }
-.p-tx { font-size:.95rem; line-height:1.8; color:var(--sand); }
-.p-tags { display:flex; flex-wrap:wrap; gap:.38rem; margin-top:.35rem; }
-.p-tag { font-size:.68rem; padding:.25rem .65rem; border:1px solid rgba(212,168,67,.28); border-radius:2px; color:var(--sand-d); font-family:'Cinzel',serif; }
-.p-fig { margin-top:.7rem; padding:.85rem 1rem; background:rgba(255,255,255,.025); border-left:2px solid var(--gold); border-radius:0 3px 3px 0; }
-.p-fn { font-family:'Cinzel',serif; font-size:.78rem; color:var(--gold-l); margin-bottom:.2rem; }
-.p-fd { font-size:.85rem; color:var(--dim); line-height:1.5; font-style:italic; }
-
-/* CITY LABELS */
-.wl { position:fixed; pointer-events:all; cursor:pointer; transform:translate(-50%,-100%); opacity:0; transition:opacity .3s; }
-.wl.vis { opacity:1; }
-.wlb { background:rgba(10,7,4,.85); border:1px solid rgba(212,168,67,.5); border-radius:3px; padding:.3rem .7rem; white-space:nowrap; position:relative; }
-.wlb::after { content:''; position:absolute; bottom:-5px; left:50%; transform:translateX(-50%);
-  border-left:5px solid transparent; border-right:5px solid transparent; border-top:5px solid rgba(212,168,67,.5); }
-.wl:hover .wlb { background:rgba(212,168,67,.15); border-color:var(--gold); }
-.wln { font-family:'Cinzel',serif; font-size:.65rem; letter-spacing:.13em; color:var(--gold-l); text-transform:uppercase; }
-.wls { font-size:.6rem; color:var(--dim); text-align:center; margin-top:1px; font-style:italic; }
-
-#panel::-webkit-scrollbar { width:3px; }
-#panel::-webkit-scrollbar-thumb { background:rgba(212,168,67,.22); border-radius:2px; }
+:root{--gold:#d4a843;--gold-l:#f0c96a;--sand:#e8d5b0;--sand-d:#c4a96a;--night:#0d0a06;--dim:#a08060;--white:#faf6ee}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--night);font-family:'Crimson Text',serif;color:var(--white)}
+canvas#c{width:100%;height:100%;display:block;touch-action:none;outline:none}
+#ld{position:fixed;inset:0;z-index:1000;background:var(--night);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1s}
+#ld.out{opacity:0;pointer-events:none}
+.ld-t{font-family:'Cinzel',serif;font-size:clamp(1.8rem,4vw,3rem);color:var(--gold);letter-spacing:.15em;margin-bottom:.3em}
+.ld-s{font-size:.82rem;color:var(--dim);letter-spacing:.35em;text-transform:uppercase;margin-bottom:2.2rem}
+.ld-bw{width:220px;height:1px;background:rgba(255,255,255,.08);margin-bottom:1rem}
+.ld-b{height:100%;width:0;background:linear-gradient(90deg,#8b5e3c,var(--gold));transition:width .2s}
+.ld-m{font-size:.75rem;color:var(--dim);letter-spacing:.08em}
+#intro{position:fixed;inset:0;z-index:900;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 55%,rgba(139,94,60,.18),rgba(13,10,6,.97) 65%);opacity:0;pointer-events:none;transition:opacity .6s}
+#intro.on{opacity:1;pointer-events:all}
+.i-rule{width:70px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto 1.8rem}
+.i-t{font-family:'Cinzel',serif;font-size:clamp(2rem,5vw,3.8rem);font-weight:700;color:var(--gold-l);text-align:center;line-height:1.1;margin-bottom:.3em}
+.i-s{font-size:1.05rem;color:var(--sand);font-style:italic;text-align:center;margin-bottom:.4em}
+.i-e{font-family:'Cinzel',serif;font-size:.68rem;color:var(--dim);letter-spacing:.35em;text-transform:uppercase;margin-bottom:2.5rem}
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:.65rem 2.2rem;margin-bottom:2.8rem}
+.ci{display:flex;align-items:center;gap:.55rem;font-size:.85rem;color:var(--sand)}
+.ck{background:rgba(255,255,255,.07);border:1px solid rgba(212,168,67,.3);border-radius:3px;padding:2px 7px;font-family:'Cinzel',serif;font-size:.68rem;color:var(--gold);min-width:32px;text-align:center}
+.eb{font-family:'Cinzel',serif;font-size:.82rem;letter-spacing:.28em;text-transform:uppercase;color:var(--night);background:linear-gradient(135deg,var(--gold),var(--sand-d));border:none;padding:.9rem 3rem;cursor:pointer;border-radius:2px;transition:transform .22s,box-shadow .22s}
+.eb:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(212,168,67,.4)}
+#hud{position:fixed;inset:0;pointer-events:none;z-index:100}
+.compass{position:absolute;top:1.4rem;right:1.4rem;width:58px;height:58px}
+.co{width:100%;height:100%;border:1px solid rgba(212,168,67,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;background:rgba(13,10,6,.55)}
+.cn{font-family:'Cinzel',serif;font-size:.55rem;color:var(--gold);position:absolute;top:4px;left:50%;transform:translateX(-50%)}
+.cs2{font-family:'Cinzel',serif;font-size:.55rem;color:var(--dim);position:absolute;bottom:4px;left:50%;transform:translateX(-50%)}
+.cneedle{width:2px;height:20px;border-radius:1px;background:linear-gradient(to bottom,var(--gold) 50%,rgba(255,255,255,.2) 50%);transition:transform .12s;transform-origin:center center}
+.loc{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);opacity:0;transition:opacity .4s;text-shadow:0 0 20px rgba(212,168,67,.5);white-space:nowrap}
+.loc.on{opacity:1}
+.hint{position:absolute;bottom:1.2rem;right:1.4rem;font-size:.68rem;color:var(--dim);text-align:right;line-height:2;pointer-events:all}
+.hint b{color:var(--sand);font-weight:400}
+#panel{position:fixed;top:0;right:-430px;width:410px;height:100%;background:linear-gradient(160deg,#14100a,#0d0a06);border-left:1px solid rgba(212,168,67,.18);z-index:200;overflow-y:auto;pointer-events:all;transition:right .45s cubic-bezier(.4,0,.2,1)}
+#panel.open{right:0}
+@media(max-width:500px){#panel{width:100%;right:-100%}}
+.ph{height:120px;position:relative;overflow:hidden;background:linear-gradient(135deg,#3d2010,#1a0e06)}
+.ph-glow{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(212,168,67,.2),transparent 70%)}
+.pc{position:absolute;top:.9rem;right:.9rem;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.15);border-radius:50%;color:var(--dim);width:26px;height:26px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.pc:hover{color:var(--gold);border-color:var(--gold)}
+.pb{padding:1.6rem}
+.p-cat{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.35em;color:var(--gold);text-transform:uppercase;margin-bottom:.45rem;opacity:.8}
+.p-tit{font-family:'Cinzel',serif;font-size:1.75rem;font-weight:700;color:var(--white);line-height:1.1;margin-bottom:.22rem}
+.p-ar{font-size:1.2rem;color:var(--sand-d);font-style:italic;direction:rtl;margin-bottom:1.1rem}
+.p-rl{width:32px;height:1px;background:linear-gradient(90deg,var(--gold),transparent);margin-bottom:1.3rem}
+.p-sec{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:1.4rem 0 .55rem;opacity:.75}
+.p-tx{font-size:.95rem;line-height:1.8;color:var(--sand)}
+.p-tags{display:flex;flex-wrap:wrap;gap:.38rem;margin-top:.35rem}
+.p-tag{font-size:.68rem;padding:.25rem .65rem;border:1px solid rgba(212,168,67,.28);border-radius:2px;color:var(--sand-d);font-family:'Cinzel',serif}
+.p-fig{margin-top:.7rem;padding:.85rem 1rem;background:rgba(255,255,255,.025);border-left:2px solid var(--gold);border-radius:0 3px 3px 0}
+.p-fn{font-family:'Cinzel',serif;font-size:.78rem;color:var(--gold-l);margin-bottom:.2rem}
+.p-fd{font-size:.85rem;color:var(--dim);line-height:1.5;font-style:italic}
+.wl{position:fixed;pointer-events:all;cursor:pointer;transform:translate(-50%,-100%);opacity:0;transition:opacity .25s}
+.wl.vis{opacity:1}
+.wlb{background:rgba(10,7,4,.8);border:1px solid rgba(212,168,67,.5);border-radius:3px;padding:.3rem .68rem;white-space:nowrap;position:relative}
+.wlb::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid rgba(212,168,67,.5)}
+.wl:hover .wlb{background:rgba(212,168,67,.12);border-color:var(--gold)}
+.wln{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.13em;color:var(--gold-l);text-transform:uppercase}
+.wls{font-size:.6rem;color:var(--dim);text-align:center;margin-top:1px;font-style:italic}
+#mm{position:fixed;bottom:1.3rem;left:1.3rem;width:130px;height:130px;border:1px solid rgba(212,168,67,.28);border-radius:3px;background:rgba(10,7,4,.85);z-index:150;overflow:hidden}
+.mm-l{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);font-family:'Cinzel',serif;font-size:.48rem;color:var(--dim);letter-spacing:.15em;text-transform:uppercase}
+#panel::-webkit-scrollbar{width:3px}
+#panel::-webkit-scrollbar-thumb{background:rgba(212,168,67,.22);border-radius:2px}
+#dnToggle{position:fixed;top:1.4rem;left:1.4rem;z-index:160;pointer-events:all;background:rgba(10,7,4,.75);border:1px solid rgba(212,168,67,.35);border-radius:28px;padding:0;width:56px;height:28px;cursor:pointer;transition:all .5s;display:flex;align-items:center;overflow:hidden}
+#dnToggle:hover{border-color:var(--gold);background:rgba(10,7,4,.9)}
+#dnToggle .dn-track{width:100%;height:100%;position:relative;border-radius:28px}
+#dnToggle .dn-thumb{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;transition:all .5s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;justify-content:center;font-size:12px}
+#dnToggle.day .dn-thumb{left:3px;background:linear-gradient(135deg,#f0c96a,#d4a843);box-shadow:0 0 12px rgba(240,200,100,.5)}
+#dnToggle.night .dn-thumb{left:31px;background:linear-gradient(135deg,#8090b8,#506088);box-shadow:0 0 12px rgba(120,140,200,.4)}
+#dnToggle .dn-label{position:absolute;font-family:'Cinzel',serif;font-size:.42rem;letter-spacing:.1em;text-transform:uppercase;top:50%;transform:translateY(-50%);transition:opacity .3s}
+#dnToggle.day .dn-day{opacity:0}
+#dnToggle.day .dn-night{right:7px;opacity:.5;color:var(--dim)}
+#dnToggle.night .dn-night{opacity:0}
+#dnToggle.night .dn-day{left:5px;opacity:.5;color:var(--dim)}
+#lblToggle{position:fixed;top:1.4rem;left:5.2rem;z-index:160;pointer-events:all;background:rgba(10,7,4,.75);border:1px solid rgba(212,168,67,.35);border-radius:28px;padding:0;width:56px;height:28px;cursor:pointer;transition:all .4s;display:flex;align-items:center;overflow:hidden}
+#lblToggle:hover{border-color:var(--gold);background:rgba(10,7,4,.9)}
+#lblToggle .lt-track{width:100%;height:100%;position:relative;border-radius:28px}
+#lblToggle .lt-thumb{position:absolute;top:3px;width:22px;height:22px;border-radius:50%;transition:all .4s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--night)}
+#lblToggle.on .lt-thumb{left:31px;background:linear-gradient(135deg,var(--gold-l),var(--gold));box-shadow:0 0 10px rgba(212,168,67,.4)}
+#lblToggle.off .lt-thumb{left:3px;background:rgba(255,255,255,.15);box-shadow:none;color:var(--dim)}
+#lblToggle .lt-label{position:absolute;font-family:'Cinzel',serif;font-size:.38rem;letter-spacing:.08em;text-transform:uppercase;top:50%;transform:translateY(-50%);transition:opacity .3s}
+#lblToggle.on .lt-on{opacity:0}
+#lblToggle.on .lt-off{right:5px;opacity:.4;color:var(--dim)}
+#lblToggle.off .lt-off{opacity:0}
+#lblToggle.off .lt-on{left:30px;opacity:.4;color:var(--dim)}
 </style>
 </head>
 <body>
 
 <div id="ld">
-  <div class="ld-t">Ancient Arabia</div>
-  <div class="ld-s">The Peninsula Before Islam</div>
+  <div class="ld-t">Ancient Makkah</div>
+  <div class="ld-s">Before the Revelation</div>
   <div class="ld-bw"><div class="ld-b" id="ldBar"></div></div>
-  <div class="ld-m" id="ldMsg">Shaping the desert...</div>
+  <div class="ld-m" id="ldMsg">Preparing...</div>
 </div>
 
 <div id="intro">
   <div class="i-rule"></div>
-  <div class="i-t">Ancient Arabia</div>
-  <div class="i-s">The Arabian Peninsula — circa 600 CE</div>
-  <div class="i-e">Before the Revelation</div>
+  <div class="i-t">Ancient Makkah</div>
+  <div class="i-s">Walk through the city as it stood before Islam</div>
+  <div class="i-e">circa 500 - 610 CE</div>
   <div class="cg">
-    <div class="ci"><span class="ck">Left drag</span>Rotate view</div>
-    <div class="ci"><span class="ck">Right drag</span>Pan map</div>
+    <div class="ci"><span class="ck">Drag</span>Rotate view</div>
     <div class="ci"><span class="ck">Scroll</span>Zoom in/out</div>
-    <div class="ci"><span class="ck">Click city</span>Explore</div>
+    <div class="ci"><span class="ck">Click label</span>Clan info</div>
+    <div class="ci"><span class="ck">X</span>Close panel</div>
   </div>
-  <button class="eb" id="enterBtn">Enter Arabia</button>
+  <button class="eb" id="enterBtn">Enter the City</button>
 </div>
 
 <canvas id="c"></canvas>
 
+<button id="dnToggle" class="day">
+  <div class="dn-track">
+    <span class="dn-label dn-day">☀</span>
+    <span class="dn-label dn-night">☽</span>
+    <div class="dn-thumb">☀</div>
+  </div>
+</button>
+
+<button id="lblToggle" class="on">
+  <div class="lt-track">
+    <span class="lt-label lt-on">Abc</span>
+    <span class="lt-label lt-off">Abc</span>
+    <div class="lt-thumb">Aa</div>
+  </div>
+</button>
+
 <div id="hud">
-  <div class="compass"><div class="co">
-    <div class="cn">N</div><div class="cs2">S</div>
-    <div class="cneedle" id="needle"></div>
-  </div></div>
-  <div class="hint"><b>Left drag</b> rotate · <b>Right drag</b> pan · <b>Scroll</b> zoom<br><b>Click</b> a city to explore</div>
-  <div id="zoom-label"></div>
+  <div class="compass"><div class="co"><div class="cn">N</div><div class="cs2">S</div><div class="cneedle" id="needle"></div></div></div>
+  <div class="loc" id="loc"></div>
+  <div class="hint"><b>Drag</b> to rotate . <b>Scroll</b> to zoom<br><b>Click</b> a label to explore</div>
 </div>
 
 <div id="panel">
-  <div class="ph"><div class="ph-glow"></div><button class="pc" id="pClose">✕</button></div>
+  <div class="ph"><div class="ph-glow"></div><button class="pc" id="pClose">X</button></div>
   <div class="pb">
     <div class="p-cat" id="pCat"></div>
     <div class="p-tit" id="pTit"></div>
     <div class="p-ar" id="pAr"></div>
     <div class="p-rl"></div>
     <p class="p-tx" id="pDesc"></p>
-    <div class="p-sec">Region & Tribe</div>
+    <div class="p-sec">Territory and Influence</div>
     <div class="p-tags" id="pTags"></div>
     <div class="p-sec">Notable Figures</div>
     <div id="pFigs"></div>
@@ -151,640 +157,564 @@ html, body { width:100%; height:100%; overflow:hidden; background:#0d0a06; font-
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<div id="mm"><canvas id="mmC" width="130" height="130"></canvas><div class="mm-l">Overview</div></div>
+
+<script src="https://cdn.babylonjs.com/babylon.js"></script>
+<script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
 <script>
-// ============================================================
-// CITY DATA
-// ============================================================
-var CITIES = {
-  makkah: {
-    cat:"Sacred City", name:"Makkah", arabic:"مكة المكرمة",
-    desc:"The holiest city of Arabia, home to the Kaaba. Every year, tribes from across the peninsula made pilgrimage here, making it the spiritual and commercial heart of Arabia.",
-    tags:["Quraysh","Hijaz","Sacred Haram","Trade Nexus"],
-    figs:[{n:"Abd al-Muttalib",d:"Grandfather of the Prophet, guardian of the Kaaba and Zamzam."},{n:"Hashim ibn Abd Manaf",d:"Established the two-caravan trade system connecting Arabia to Syria and Yemen."}],
-    role:"Custodian of the Kaaba, Makkah controlled the pilgrimage economy that funded all of Qurayshi power."
-  },
-  madinah: {
-    cat:"Oasis City", name:"Madinah", arabic:"المدينة المنورة",
-    desc:"Known as Yathrib before Islam, Madinah was a fertile oasis city inhabited by the Arab tribes of Aws and Khazraj, alongside Jewish tribes. Rich date-palm groves sustained its economy.",
-    tags:["Aws","Khazraj","Hijaz","Oasis"],
-    figs:[{n:"Aws & Khazraj",d:"Two dominant Arab tribes locked in prolonged civil conflict before Islam."},{n:"Banu Qaynuqa",d:"One of the three major Jewish tribes of Yathrib, skilled in goldsmithing."}],
-    role:"A prosperous but fractured oasis city that would become the first Islamic state."
-  },
-  taif: {
-    cat:"Mountain City", name:"Ta'if", arabic:"الطائف",
-    desc:"Perched high in the mountains east of Makkah, Ta'if was famous for its cool climate, vineyards, and roses. Home of the Thaqif tribe and the idol Al-Lat.",
-    tags:["Thaqif","Hijaz","Highland","Al-Lat Shrine"],
-    figs:[{n:"Urwa ibn Masud",d:"Leader of Thaqif, later one of the most influential converts to Islam."},{n:"Ibn Abd Yalil",d:"Chief who famously rejected the Prophet's call when he sought refuge in Ta'if."}],
-    role:"Ta'if's wealth from agriculture and its cool mountain air made it the summer retreat of Meccan nobility."
-  },
-  sanaa: {
-    cat:"Imperial City", name:"Sana'a", arabic:"صنعاء",
-    desc:"Capital of Yemen, one of the oldest continuously inhabited cities on earth. Under Sassanid Persian rule in 600 CE after the Abyssinian-Persian wars. A city of towering multi-storey tower houses.",
-    tags:["Yemen","Persian Satrap","Himyar Legacy","Trade"],
-    figs:[{n:"Badhan",d:"Persian governor of Yemen who famously converted to Islam upon receiving the Prophet's letter."},{n:"Abraha",d:"Abyssinian viceroy who launched the legendary Elephant campaign toward Makkah."}],
-    role:"Yemen was the source of Arabia's most precious exports — frankincense, myrrh, and spices — making Sana'a one of the wealthiest cities of the ancient world."
-  },
-  petra: {
-    cat:"Ancient Capital", name:"Petra (Hijr)", arabic:"البتراء",
-    desc:"The rose-red Nabataean capital, by 600 CE long absorbed into the Byzantine and then early Islamic sphere. Its trade routes were declining but it remained a landmark of northern Arabia.",
-    tags:["Nabataean","Northern Hijaz","Byzantine frontier","Trade routes"],
-    figs:[{n:"Nabataean Kings",d:"Built the rock-carved city that controlled the incense route for centuries."}],
-    role:"Once the wealthiest trade hub in Arabia, Petra controlled the routes between Arabia, Egypt and the Mediterranean."
-  },
-  ctesiphon: {
-    cat:"Imperial Capital", name:"Al-Hira", arabic:"الحيرة",
-    desc:"Capital of the Lakhmid Arab kingdom, vassals of the Sassanid Persian Empire. Al-Hira was the most sophisticated Arab city of the era — a centre of poetry, Christianity, and Persian culture.",
-    tags:["Lakhmid","Persian Vassal","Mesopotamia","Poetry"],
-    figs:[{n:"Al-Numan ibn al-Mundhir",d:"Last Lakhmid king, patron of poets, executed by the Persian Shah around 602 CE."},{n:"Adi ibn Zayd",d:"Poet and courtier, one of the greatest Arabic poets of the pre-Islamic age."}],
-    role:"Al-Hira transmitted Persian culture, Aramaic script, and Christian theology deep into the Arab world."
-  },
-  najran: {
-    cat:"Christian City", name:"Najran", arabic:"نجران",
-    desc:"A prosperous Christian Arab city in southern Arabia. In 523 CE, its Christian community was massacred by the Himyarite Jewish king Dhu Nuwas — an event referenced in the Quran as 'the People of the Ditch'.",
-    tags:["Christian Arabs","South Arabia","Martyrs","Byzantine ally"],
-    figs:[{n:"Al-Harith ibn Ka'b",d:"Tribal leader whose community was massacred for refusing to abandon Christianity."},{n:"Dhu Nuwas",d:"Himyarite Jewish king whose persecution of Najran's Christians triggered the Abyssinian invasion."}],
-    role:"Najran was the heart of Arabian Christianity and a flashpoint for the great power rivalry between Byzantium, Persia and Abyssinia."
-  },
-  dumatul_jandal: {
-    cat:"Caravan Hub", name:"Dumat al-Jandal", arabic:"دومة الجندل",
-    desc:"A key oasis at the crossroads of Arabia, north of the Nafud desert. Its annual fair was one of the largest in the peninsula, connecting the Syrian, Iraqi and Arabian trade networks.",
-    tags:["Northern Arabia","Caravans","Annual Fair","Ghassanid frontier"],
-    figs:[{n:"Ukaydir ibn Abd al-Malik",d:"Christian Arab ruler of Dumat al-Jandal who negotiated with the early Muslim state."}],
-    role:"Dumat al-Jandal's strategic position between the great empires made it a vital waypoint for every major caravan route."
-  }
+var CLANS = {
+  kaaba: { cat:"Sacred Centre", name:"Al-Kaaba", arabic:"\u0627\u0644\u0643\u0639\u0628\u0629 \u0627\u0644\u0645\u0634\u0631\u0641\u0629", desc:"The ancient cubic structure at the heart of Makkah. Long before Islam, pilgrims from every Arabian tribe journeyed here annually. The city's entire existence revolved around its role as custodian of this sanctuary.", tags:["Sacred Sanctuary","Pilgrimage Centre","Black Stone","Ibrahim's Legacy"], figs:[{n:"Qusay ibn Kilab",d:"United the Quraysh clans around 400 CE and established the custodianship system."},{n:"Abd al-Muttalib",d:"Grandfather of the Prophet; keeper of the Kaaba who rediscovered Zamzam."}], role:"The Kaaba was the axis around which all Arabian tribal life revolved." },
+  banu_hashim: { cat:"Noble Clan", name:"Banu Hashim", arabic:"\u0628\u0646\u0648 \u0647\u0627\u0634\u0645", desc:"The most honoured clan of the Quraysh, entrusted with providing water to pilgrims from the sacred Zamzam well. Their quarter lay directly adjacent to the Kaaba.", tags:["Zamzam Custodians","Water Bearers","Rifada Duty","Inner Haram"], figs:[{n:"Hashim ibn Abd Manaf",d:"Pioneered the two great trade caravans to Syria and Yemen."},{n:"Abd al-Muttalib",d:"Rediscovered Zamzam after centuries of burial."}], role:"Banu Hashim held the twin sacred offices of Siqaya and Rifada." },
+  banu_makhzum: { cat:"Warrior Clan", name:"Banu Makhzum", arabic:"\u0628\u0646\u0648 \u0645\u062e\u0632\u0648\u0645", desc:"The preeminent military clan of the Quraysh, commanding the trade routes from the coastal Tihama region.", tags:["Military Dominance","Western District","Tihama Route","War Council"], figs:[{n:"Amr ibn Hisham (Abu Jahl)",d:"The most authoritative political voice of the clan."},{n:"Khalid ibn al-Walid",d:"Born of this clan, he became the most gifted military commander of his era."}], role:"Banu Makhzum controlled Makkah's military apparatus and the western commercial corridor." },
+  banu_umayya: { cat:"Political Clan", name:"Banu Umayya", arabic:"\u0628\u0646\u0648 \u0623\u0645\u064a\u0629", desc:"The great rivals of Banu Hashim. Masters of mercantile politics and long-distance trade from the eastern districts.", tags:["Commercial Power","Eastern District","Syrian Trade","Political Brokers"], figs:[{n:"Abu Sufyan ibn Harb",d:"Supreme commander of Qurayshi trade caravans."},{n:"Uthman ibn Affan",d:"A wealthy merchant who became the third Caliph of Islam."}], role:"Banu Umayya's wealth came from mastery of the Syrian trade route." },
+  banu_zuhra: { cat:"Merchant Clan", name:"Banu Zuhra", arabic:"\u0628\u0646\u0648 \u0632\u0647\u0631\u0629", desc:"A respected Qurayshi clan of scholars, diplomats and merchants occupying the northern quarters.", tags:["Northern District","Incense Trade","Diplomatic Clan","Yemeni Route"], figs:[{n:"Amina bint Wahb",d:"Mother of the Prophet Muhammad."},{n:"Abd al-Rahman ibn Awf",d:"One of the wealthiest companions of the Prophet."}], role:"Banu Zuhra's mastery of the Yemeni incense route brought frankincense that perfumed the entire city." },
+  zamzam: { cat:"Sacred Site", name:"Bir Zamzam", arabic:"\u0628\u0626\u0631 \u0632\u0645\u0632\u0645", desc:"The sacred well of Makkah, believed to have miraculously appeared for Hajar and her infant son Ismail.", tags:["Sacred Well","Blessed Water","Pilgrim Provision"], figs:[{n:"Hajar",d:"Her search for water between Safa and Marwa is commemorated in Hajj rites."},{n:"Abd al-Muttalib",d:"Rediscovered Zamzam following a divine dream."}], role:"Zamzam was the foundation of Makkah's existence." },
+  suq_makkah: { cat:"Trade District", name:"Suq Makkah", arabic:"\u0633\u0648\u0642 \u0645\u0643\u0629", desc:"The markets of ancient Makkah ranked among the most important commercial hubs on the Arabian Peninsula.", tags:["Incense Route","Annual Fair","Arabian Commerce","Caravan Hub"], figs:[{n:"Hashim ibn Abd Manaf",d:"Established the two-caravan system that anchored Makkah's commercial supremacy."}], role:"The market's genius was its dual foundation: religious authority brought pilgrims, and Qurayshi trade networks let them trade in safety." }
 };
 
-// City positions in world space (peninsula spans roughly x:-600 to 600, z:-800 to 400)
-// Centred around Arabian peninsula geography
-var CITY_DEFS = [
-  { id:"makkah",          x: -80,  z:  80,  pop:3, importance:5 },
-  { id:"madinah",         x: -95,  z: -60,  pop:2, importance:4 },
-  { id:"taif",            x: -45,  z:  95,  pop:2, importance:3 },
-  { id:"sanaa",           x: -50,  z: 260,  pop:4, importance:4 },
-  { id:"petra",           x:-155,  z:-210,  pop:3, importance:3 },
-  { id:"ctesiphon",       x: 120,  z:-320,  pop:5, importance:4 },
-  { id:"najran",          x:  10,  z: 200,  pop:2, importance:3 },
-  { id:"dumatul_jandal",  x:  30,  z:-210,  pop:2, importance:3 },
+var ZONES = [
+  {id:"kaaba",       x:0,   z:0,   r:12, ly:14},
+  {id:"banu_hashim", x:-18, z:-18, r:18, ly:7},
+  {id:"banu_makhzum",x:-38, z:10,  r:20, ly:7},
+  {id:"banu_umayya", x:36,  z:-14, r:20, ly:7},
+  {id:"banu_zuhra",  x:10,  z:40,  r:18, ly:7},
+  {id:"zamzam",      x:7,   z:3,   r:6,  ly:10},
+  {id:"suq_makkah",  x:28,  z:26,  r:16, ly:7}
 ];
 
-// ============================================================
-// THREE.JS SETUP
-// ============================================================
-var W = window.innerWidth, H = window.innerHeight;
-var renderer = new THREE.WebGLRenderer({ canvas:document.getElementById('c'), antialias:true, powerPreference:'high-performance' });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setSize(W, H);
-renderer.outputEncoding = THREE.sRGBEncoding;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.1;
-
-var scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x7a5530, 0.0008);
-
-var camera = new THREE.PerspectiveCamera(50, W/H, 1, 8000);
-camera.position.set(0, 500, 400);
-camera.lookAt(0, 0, 0);
-
-window.addEventListener('resize', function() {
-  W = window.innerWidth; H = window.innerHeight;
-  camera.aspect = W/H; camera.updateProjectionMatrix();
-  renderer.setSize(W, H);
+/* ENGINE */
+var canvas = document.getElementById("c");
+var engine = new BABYLON.Engine(canvas, true, {
+  preserveDrawingBuffer: false,
+  stencil: true,
+  antialias: true
 });
+var scene = new BABYLON.Scene(engine);
+scene.clearColor = new BABYLON.Color4(0.58, 0.42, 0.24, 1);
+scene.skipPointerMovePicking = true;
 
-// ============================================================
-// LIGHTING — no shadows, baked ambient instead
-// ============================================================
-var ambient = new THREE.AmbientLight(0xffd080, 0.7);
-scene.add(ambient);
+/* CAMERA */
+var cam = new BABYLON.ArcRotateCamera("cam", -Math.PI/2, Math.PI/3.2, 115, BABYLON.Vector3.Zero(), scene);
+cam.minZ = 0.5;
+cam.maxZ = 500;
+cam.lowerRadiusLimit = 55;
+cam.upperRadiusLimit = 180;
+cam.lowerBetaLimit = 0.25;
+cam.upperBetaLimit = Math.PI / 2.05;
+cam.wheelPrecision = 2;
+cam.panningSensibility = 0;
+cam.angularSensibilityX = 500;
+cam.angularSensibilityY = 500;
+cam.inertia = 0.6;
 
-var sun = new THREE.DirectionalLight(0xffcc77, 1.6);
-sun.position.set(-200, 400, -100);
-scene.add(sun);
+/* LIGHTING */
+var sun = new BABYLON.DirectionalLight("sun", new BABYLON.Vector3(-0.4, -0.6, 0.2), scene);
+sun.intensity = 2.8;
+sun.diffuse = new BABYLON.Color3(1.0, 0.76, 0.38);
+sun.specular = new BABYLON.Color3(0.4, 0.25, 0.1);
 
-var fill = new THREE.DirectionalLight(0x6688aa, 0.25);
-fill.position.set(200, 100, 200);
-scene.add(fill);
+var sg = new BABYLON.ShadowGenerator(1024, sun);
+sg.usePercentageCloserFiltering = true;
+sg.filteringQuality = BABYLON.ShadowGenerator.QUALITY_MEDIUM;
+sg.setDarkness(0.4);
+sg.bias = 0.008;
+sg.normalBias = 0.02;
+sun.shadowMinZ = 1;
+sun.shadowMaxZ = 300;
+sun.autoUpdateExtends = true;
+sun.autoCalcShadowZBounds = true;
 
-// ============================================================
-// SKY — simple gradient sphere, very cheap
-// ============================================================
-var skyGeo = new THREE.SphereGeometry(4000, 16, 8);
-var skyMat = new THREE.ShaderMaterial({
-  side: THREE.BackSide,
-  uniforms: {
-    topColor:    { value: new THREE.Color(0x1a0c20) },
-    midColor:    { value: new THREE.Color(0x7a3018) },
-    horizColor:  { value: new THREE.Color(0xd06020) },
-    offset:      { value: 0.2 },
-    exponent:    { value: 0.5 }
-  },
-  vertexShader: `
-    varying vec3 vWorldPos;
-    void main() { vWorldPos = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }
-  `,
-  fragmentShader: `
-    uniform vec3 topColor, midColor, horizColor;
-    uniform float offset, exponent;
-    varying vec3 vWorldPos;
-    void main() {
-      float h = normalize(vWorldPos).y;
-      vec3 col;
-      if (h > 0.0) col = mix(midColor, topColor, pow(h, exponent));
-      else col = mix(horizColor, midColor, pow(-h * 3.0, 0.4));
-      gl_FragColor = vec4(col, 1.0);
-    }
-  `
-});
-scene.add(new THREE.Mesh(skyGeo, skyMat));
+var hemi = new BABYLON.HemisphericLight("h", new BABYLON.Vector3(0, 1, 0), scene);
+hemi.intensity = 0.65;
+hemi.diffuse = new BABYLON.Color3(0.85, 0.65, 0.42);
+hemi.groundColor = new BABYLON.Color3(0.5, 0.32, 0.18);
 
-// ============================================================
-// TERRAIN — heightmap generated procedurally
-// ============================================================
-function hash(x, y) {
-  var h = (Math.sin(x * 127.1 + y * 311.7) * 43758.5453);
-  return h - Math.floor(h);
-}
-function smoothNoise(x, y) {
-  var ix = Math.floor(x), iy = Math.floor(y);
-  var fx = x - ix, fy = y - iy;
-  var ux = fx*fx*(3-2*fx), uy = fy*fy*(3-2*fy);
-  return (hash(ix,iy)*(1-ux) + hash(ix+1,iy)*ux) * (1-uy) +
-         (hash(ix,iy+1)*(1-ux) + hash(ix+1,iy+1)*ux) * uy;
-}
-function fbm(x, y, oct) {
-  var v=0, a=0.5, f=1;
-  for(var i=0;i<oct;i++){ v+=a*smoothNoise(x*f,y*f); a*=0.5; f*=2.1; }
-  return v;
-}
+/* SKY */
+var sky = BABYLON.MeshBuilder.CreateSphere("sky", {diameter:580, sideOrientation:BABYLON.Mesh.BACKSIDE, segments:8}, scene);
+var skyMat = new BABYLON.StandardMaterial("sm", scene);
+skyMat.disableLighting = true;
+skyMat.backFaceCulling = false;
+var skyTex = new BABYLON.DynamicTexture("st", {width:256, height:256}, scene, false);
+var skyCtx = skyTex.getContext();
+var skyGrad = skyCtx.createLinearGradient(0, 256, 0, 0);
+skyGrad.addColorStop(0, "#c04008");
+skyGrad.addColorStop(0.15, "#d85818");
+skyGrad.addColorStop(0.35, "#a03820");
+skyGrad.addColorStop(0.55, "#6a2830");
+skyGrad.addColorStop(0.8, "#2e1428");
+skyGrad.addColorStop(1, "#160820");
+skyCtx.fillStyle = skyGrad;
+skyCtx.fillRect(0, 0, 256, 256);
+var sunGlow = skyCtx.createRadialGradient(60, 230, 0, 60, 230, 80);
+sunGlow.addColorStop(0, "rgba(255,210,90,1)");
+sunGlow.addColorStop(0.3, "rgba(255,140,30,0.8)");
+sunGlow.addColorStop(1, "rgba(255,60,0,0)");
+skyCtx.fillStyle = sunGlow;
+skyCtx.fillRect(0, 0, 256, 256);
+skyTex.update();
+skyMat.emissiveTexture = skyTex;
+sky.material = skyMat;
+sky.isPickable = false;
 
-// Peninsula terrain heightmap
-function terrainHeight(wx, wz) {
-  // Base peninsula shape — elevated edges
-  var nx = wx / 600, nz = wz / 600;
-  
-  // Peninsula outline: roughly triangular with Red Sea on west, Gulf on east
-  // Widest in north (Syria/Iraq), tapering to south (Yemen/Oman)
-  var peninsulaShape = 1.0 - Math.max(0, (nz - 0.2) * 0.8); // tapers south
-  
-  // Hijaz mountains along western edge (Red Sea coast)
-  var hijazDist = Math.abs(nx + 0.15) - 0.05; // ridge along x ~ -0.15
-  var hijazMtn = Math.max(0, 1 - hijazDist * 8) * 180 * Math.max(0, 1 - Math.abs(nz) * 1.2);
-  
-  // Hejaz/Asir mountains (southwest) — higher
-  var asirDist = Math.sqrt(Math.pow(nx+0.1, 2) + Math.pow(nz-0.45, 2));
-  var asirMtn = Math.max(0, 1 - asirDist * 4) * 220;
-  
-  // Hajar mountains (Oman, east)
-  var hajarDist = Math.sqrt(Math.pow(nx-0.7, 2) + Math.pow(nz-0.2, 2));
-  var hajarMtn = Math.max(0, 1 - hajarDist * 4) * 160;
-  
-  // Yemen highlands
-  var yemenDist = Math.sqrt(Math.pow(nx+0.1, 2) + Math.pow(nz-0.5, 2));
-  var yemenMtn = Math.max(0, 1 - yemenDist * 3.5) * 250;
-  
-  // Nafud + Rub al-Khali — vast desert basins (LOW)
-  var nafudDep = Math.max(0, 1 - Math.sqrt(Math.pow(nx+0.05,2)+Math.pow(nz+0.35,2))*3) * (-20);
-  var rubDep   = Math.max(0, 1 - Math.sqrt(Math.pow(nx+0.1,2)+Math.pow(nz-0.25,2))*2.2) * (-15);
-  
-  // General noise for surface variation
-  var noise = fbm(wx*0.008, wz*0.008, 5) * 60 + fbm(wx*0.025, wz*0.025, 3) * 20;
-  
-  var base = 5 + noise + hijazMtn + asirMtn + hajarMtn + yemenMtn + nafudDep + rubDep;
-  return Math.max(-5, base);
-}
+/* FOG */
+scene.fogMode = BABYLON.Scene.FOGMODE_LINEAR;
+scene.fogColor = new BABYLON.Color3(0.68, 0.48, 0.28);
+scene.fogStart = 80;
+scene.fogEnd = 250;
 
-var TERRAIN_SEGS = 180; // segments — high enough for detail
-var TERRAIN_SIZE = 1400;
-var terrainGeo = new THREE.PlaneGeometry(TERRAIN_SIZE, TERRAIN_SIZE, TERRAIN_SEGS, TERRAIN_SEGS);
-terrainGeo.rotateX(-Math.PI / 2);
+/* POST-PROCESS */
+var pp = new BABYLON.DefaultRenderingPipeline("pp", false, scene, [cam]);
+pp.fxaaEnabled = true;
+pp.bloomEnabled = true;
+pp.bloomThreshold = 0.7;
+pp.bloomWeight = 0.22;
+pp.bloomKernel = 32;
+pp.imageProcessingEnabled = true;
+pp.imageProcessing.contrast = 1.1;
+pp.imageProcessing.exposure = 1.08;
+pp.imageProcessing.vignetteEnabled = true;
+pp.imageProcessing.vignetteWeight = 1.8;
+pp.imageProcessing.vignetteWeight = 1.8;
 
-var pos = terrainGeo.attributes.position;
-var colors = [];
-for (var i = 0; i < pos.count; i++) {
-  var tx = pos.getX(i), tz = pos.getZ(i);
-  var h = terrainHeight(tx, tz);
-  pos.setY(i, h);
-  
-  // Vertex colours based on height + noise
-  var n = fbm(tx*0.04, tz*0.04, 3);
-  var t; // 0=low sand, 1=rock
-  if (h < 5) t = 0.0;
-  else if (h < 40) t = 0.1 + n * 0.15;
-  else if (h < 120) t = 0.3 + n * 0.2;
-  else t = 0.6 + n * 0.3;
-  t = Math.min(t, 1);
-  
-  var r = 0.72 - t*0.28 + n*0.06;
-  var g = 0.55 - t*0.22 + n*0.04;
-  var b = 0.32 - t*0.15 + n*0.03;
-  colors.push(r, g, b);
-}
-pos.needsUpdate = true;
-terrainGeo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-terrainGeo.computeVertexNormals();
-
-var terrainMat = new THREE.MeshLambertMaterial({ vertexColors: true });
-var terrain = new THREE.Mesh(terrainGeo, terrainMat);
-scene.add(terrain);
-
-// ============================================================
-// WATER — Red Sea and Persian Gulf
-// ============================================================
-var waterMat = new THREE.MeshLambertMaterial({ color:0x1a4060, transparent:true, opacity:0.82 });
-
-// Red Sea (west coast)
-var rsGeo = new THREE.PlaneGeometry(120, 900, 1, 1);
-rsGeo.rotateX(-Math.PI/2);
-var rs = new THREE.Mesh(rsGeo, waterMat);
-rs.position.set(-610, 1, -100);
-rs.rotation.y = 0.18;
-scene.add(rs);
-
-// Persian Gulf (northeast)
-var pgGeo = new THREE.PlaneGeometry(100, 500, 1, 1);
-pgGeo.rotateX(-Math.PI/2);
-var pg = new THREE.Mesh(pgGeo, waterMat);
-pg.position.set(560, 1, -300);
-pg.rotation.y = -0.3;
-scene.add(pg);
-
-// Gulf of Aden / Arabian Sea (south)
-var aoGeo = new THREE.PlaneGeometry(1000, 140, 1, 1);
-aoGeo.rotateX(-Math.PI/2);
-var ao = new THREE.Mesh(aoGeo, waterMat);
-ao.position.set(0, 1, 560);
-scene.add(ao);
-
-// ============================================================
-// CITIES — instanced buildings, LOD based on camera distance
-// ============================================================
-// Shared building geometries (very simple — boxes)
-var bGeoSmall  = new THREE.BoxGeometry(2.5, 3, 2.5);
-var bGeoMed    = new THREE.BoxGeometry(3.5, 4.5, 3.5);
-var bGeoLarge  = new THREE.BoxGeometry(5, 7, 5);
-var bGeoTower  = new THREE.BoxGeometry(3, 10, 3);
-
-// Single material per city tint (very cheap)
-function cityMat(hex) { return new THREE.MeshLambertMaterial({ color: hex }); }
-var matHouse  = cityMat(0xc4956a);
-var matHouse2 = cityMat(0xb07d50);
-var matRock   = cityMat(0x8a6040);
-var matWall   = cityMat(0xd4a870);
-
-// City groups
-var cityGroups = {};
-var CITY_VISIBLE_DIST = 350; // beyond this, show only glow dot
-
-function rng(seed) {
-  var x = Math.sin(seed) * 43758.5453;
-  return x - Math.floor(x);
-}
-
-function buildCity(def) {
-  var cd = CITIES[def.id];
-  var group = new THREE.Group();
-  group.position.set(def.x, terrainHeight(def.x, def.z) + 0.5, def.z);
-  
-  var count = 40 + def.pop * 30; // buildings per city
-  var radius = 8 + def.pop * 6;
-  
-  for (var i = 0; i < count; i++) {
-    var angle = rng(i * 7.3 + def.x) * Math.PI * 2;
-    var dist  = rng(i * 3.1 + def.z) * radius;
-    var bx = Math.cos(angle) * dist;
-    var bz = Math.sin(angle) * dist;
-    var th = terrainHeight(def.x + bx, def.z + bz) - terrainHeight(def.x, def.z);
-    
-    var size = rng(i * 2.7) < 0.15 ? 2 : (rng(i * 5.1) < 0.4 ? 1 : 0);
-    var geo = [bGeoSmall, bGeoMed, bGeoLarge][size];
-    var mat = rng(i * 11.3) < 0.5 ? matHouse : matHouse2;
-    var mesh = new THREE.Mesh(geo, mat);
-    
-    var bh = [1.5, 2.25, 3.5][size];
-    mesh.position.set(bx, th + bh, bz);
-    mesh.rotation.y = rng(i * 9.1) * Math.PI * 2;
-    group.add(mesh);
-  }
-  
-  // Central landmark (kaaba / main mosque / palace)
-  var landmark = new THREE.Mesh(
-    def.importance >= 5 ? new THREE.BoxGeometry(8,8,8) : new THREE.BoxGeometry(6,9,6),
-    matWall
-  );
-  landmark.position.set(0, def.importance >= 5 ? 4 : 4.5, 0);
-  group.add(landmark);
-  
-  // City glow dot (visible from far)
-  var dotGeo = new THREE.CircleGeometry(3 + def.pop * 1.5, 8);
-  dotGeo.rotateX(-Math.PI/2);
-  var dotMat = new THREE.MeshBasicMaterial({ color:0xffc050, transparent:true, opacity:0.9 });
-  var dot = new THREE.Mesh(dotGeo, dotMat);
-  dot.position.y = 0.5;
-  dot.userData.isDot = true;
-  group.add(dot);
-  
-  group.userData = { id: def.id, dot: dot, def: def };
-  scene.add(group);
-  cityGroups[def.id] = group;
-}
-
-CITY_DEFS.forEach(buildCity);
-
-// ============================================================
-// TRADE ROUTES — dashed lines connecting cities
-// ============================================================
-function makeLine(points, color) {
-  var geo = new THREE.BufferGeometry().setFromPoints(points);
-  var mat = new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: 0.35 });
-  return new THREE.Line(geo, mat);
-}
-
-function cityPos(id) {
-  var d = CITY_DEFS.find(function(c){ return c.id===id; });
-  return new THREE.Vector3(d.x, terrainHeight(d.x, d.z) + 6, d.z);
-}
-
-var routes = [
-  ['makkah','madinah'], ['makkah','taif'], ['makkah','najran'],
-  ['madinah','petra'], ['petra','dumatul_jandal'], ['dumatul_jandal','ctesiphon'],
-  ['najran','sanaa'], ['makkah','sanaa'], ['sanaa','najran']
-];
-routes.forEach(function(r) {
-  var a = cityPos(r[0]), b = cityPos(r[1]);
-  // Arc the line up slightly
-  var mid = new THREE.Vector3().addVectors(a,b).multiplyScalar(0.5);
-  mid.y += 20;
-  var pts = [];
-  for(var t=0; t<=12; t++){
-    var f = t/12;
-    var p = new THREE.Vector3(
-      (1-f)*(1-f)*a.x + 2*(1-f)*f*mid.x + f*f*b.x,
-      (1-f)*(1-f)*a.y + 2*(1-f)*f*mid.y + f*f*b.y,
-      (1-f)*(1-f)*a.z + 2*(1-f)*f*mid.z + f*f*b.z
-    );
-    pts.push(p);
-  }
-  scene.add(makeLine(pts, 0xd4a843));
-});
-
-// ============================================================
-// HTML CITY LABELS
-// ============================================================
-var labelEls = {};
-CITY_DEFS.forEach(function(def) {
-  var cd = CITIES[def.id];
-  if (!cd) return;
-  var el = document.createElement('div');
-  el.className = 'wl';
-  el.innerHTML = '<div class="wlb"><div class="wln">' + cd.name + '</div><div class="wls">' + cd.cat + '</div></div>';
-  el.addEventListener('click', function() { openPanel(def.id); });
-  document.getElementById('hud').appendChild(el);
-  labelEls[def.id] = el;
-});
-
-// ============================================================
-// PANEL
-// ============================================================
-function openPanel(id) {
-  var c = CITIES[id];
-  if (!c) return;
-  document.getElementById('pCat').textContent  = c.cat;
-  document.getElementById('pTit').textContent  = c.name;
-  document.getElementById('pAr').textContent   = c.arabic;
-  document.getElementById('pDesc').textContent = c.desc;
-  document.getElementById('pRole').textContent = c.role;
-  document.getElementById('pTags').innerHTML   = c.tags.map(function(t){ return '<span class="p-tag">'+t+'</span>'; }).join('');
-  document.getElementById('pFigs').innerHTML   = c.figs.map(function(f){ return '<div class="p-fig"><div class="p-fn">'+f.n+'</div><div class="p-fd">'+f.d+'</div></div>'; }).join('');
-  document.getElementById('panel').classList.add('open');
-}
-document.getElementById('pClose').addEventListener('click', function() {
-  document.getElementById('panel').classList.remove('open');
-});
-
-// ============================================================
-// CAMERA CONTROLS — fast, smooth, no dependencies
-// ============================================================
-var ctrl = {
-  theta: 0.2,        // horizontal angle
-  phi: 0.95,         // vertical angle (radians from top)
-  radius: 550,       // distance from target
-  target: new THREE.Vector3(0, 0, 50),
-  
-  minRadius: 60,
-  maxRadius: 1200,
-  minPhi: 0.15,
-  maxPhi: 1.4,
-  
-  dragging: false,
-  panning: false,
-  lastX: 0, lastY: 0,
-  
-  // Smooth damping
-  thetaV: 0, phiV: 0, radiusV: 0,
-  targetV: new THREE.Vector3()
-};
-
-function updateCamera() {
-  var sinPhi = Math.sin(ctrl.phi);
-  var cosPhi = Math.cos(ctrl.phi);
-  camera.position.set(
-    ctrl.target.x + ctrl.radius * sinPhi * Math.sin(ctrl.theta),
-    ctrl.target.y + ctrl.radius * cosPhi,
-    ctrl.target.z + ctrl.radius * sinPhi * Math.cos(ctrl.theta)
-  );
-  camera.lookAt(ctrl.target);
-}
-
-var canvas = document.getElementById('c');
-
-canvas.addEventListener('mousedown', function(e) {
-  if (e.button === 0) { ctrl.dragging = true; }
-  if (e.button === 2) { ctrl.panning = true; }
-  ctrl.lastX = e.clientX; ctrl.lastY = e.clientY;
-});
-canvas.addEventListener('contextmenu', function(e){ e.preventDefault(); });
-
-window.addEventListener('mouseup', function() { ctrl.dragging = false; ctrl.panning = false; });
-
-window.addEventListener('mousemove', function(e) {
-  var dx = e.clientX - ctrl.lastX;
-  var dy = e.clientY - ctrl.lastY;
-  ctrl.lastX = e.clientX; ctrl.lastY = e.clientY;
-  
-  if (ctrl.dragging) {
-    ctrl.theta -= dx * 0.006;
-    ctrl.phi = Math.max(ctrl.minPhi, Math.min(ctrl.maxPhi, ctrl.phi + dy * 0.005));
-  }
-  if (ctrl.panning) {
-    var panSpeed = ctrl.radius * 0.0012;
-    var right = new THREE.Vector3();
-    var forward = new THREE.Vector3();
-    right.crossVectors(camera.getWorldDirection(forward), camera.up).normalize();
-    // Pan in camera-space X/Z
-    var camDir = new THREE.Vector3();
-    camera.getWorldDirection(camDir);
-    var flatDir = new THREE.Vector3(camDir.x, 0, camDir.z).normalize();
-    var flatRight = new THREE.Vector3(-flatDir.z, 0, flatDir.x);
-    ctrl.target.addScaledVector(flatRight, -dx * panSpeed);
-    ctrl.target.addScaledVector(flatDir,    dy * panSpeed);
-  }
-});
-
-canvas.addEventListener('wheel', function(e) {
-  e.preventDefault();
-  var delta = e.deltaY > 0 ? 1.12 : 0.89;
-  ctrl.radius = Math.max(ctrl.minRadius, Math.min(ctrl.maxRadius, ctrl.radius * delta));
-}, { passive: false });
-
-// Touch support
-var touches = {};
-canvas.addEventListener('touchstart', function(e) {
-  e.preventDefault();
-  Array.from(e.changedTouches).forEach(function(t){ touches[t.identifier] = {x:t.clientX,y:t.clientY}; });
-  var ids = Object.keys(touches);
-  if (ids.length === 1) { ctrl.dragging = true; ctrl.lastX = e.touches[0].clientX; ctrl.lastY = e.touches[0].clientY; }
-}, { passive: false });
-
-canvas.addEventListener('touchmove', function(e) {
-  e.preventDefault();
-  var ids = Object.keys(touches);
-  if (ids.length === 1) {
-    var dx = e.touches[0].clientX - ctrl.lastX;
-    var dy = e.touches[0].clientY - ctrl.lastY;
-    ctrl.lastX = e.touches[0].clientX; ctrl.lastY = e.touches[0].clientY;
-    ctrl.theta -= dx * 0.006;
-    ctrl.phi = Math.max(ctrl.minPhi, Math.min(ctrl.maxPhi, ctrl.phi + dy * 0.005));
-  } else if (ids.length === 2) {
-    // Pinch zoom
-    var t0 = e.touches[0], t1 = e.touches[1];
-    var dist = Math.hypot(t0.clientX-t1.clientX, t0.clientY-t1.clientY);
-    var prev0 = touches[t0.identifier], prev1 = touches[t1.identifier];
-    if (prev0 && prev1) {
-      var prevDist = Math.hypot(prev0.x-prev1.x, prev0.y-prev1.y);
-      ctrl.radius = Math.max(ctrl.minRadius, Math.min(ctrl.maxRadius, ctrl.radius * (prevDist/dist)));
-    }
-  }
-  Array.from(e.changedTouches).forEach(function(t){ touches[t.identifier] = {x:t.clientX,y:t.clientY}; });
-}, { passive: false });
-
-canvas.addEventListener('touchend', function(e) {
-  Array.from(e.changedTouches).forEach(function(t){ delete touches[t.identifier]; });
-  if (Object.keys(touches).length === 0) { ctrl.dragging = false; ctrl.panning = false; }
-});
-
-// ============================================================
-// RENDER LOOP
-// ============================================================
-var entered = false;
-var zoomLabel = document.getElementById('zoom-label');
-var needle = document.getElementById('needle');
-var frame = 0;
-
-function getZoomLevel() {
-  if (ctrl.radius < 150) return 'City View';
-  if (ctrl.radius < 350) return 'Regional View';
-  return 'Peninsula View';
-}
-
-// Project 3D world pos to screen
-var _v3 = new THREE.Vector3();
-function toScreen(wx, wy, wz) {
-  _v3.set(wx, wy, wz);
-  _v3.project(camera);
-  return {
-    x: (_v3.x + 1) / 2 * W,
-    y: (1 - _v3.y) / 2 * H,
-    behind: _v3.z > 1
-  };
-}
-
-function animate() {
-  requestAnimationFrame(animate);
-  
-  if (!entered) { renderer.render(scene, camera); return; }
-  
-  updateCamera();
-  
-  frame++;
-  
-  // Update labels every 2 frames
-  if (frame % 2 === 0) {
-    CITY_DEFS.forEach(function(def) {
-      var el = labelEls[def.id];
-      if (!el) return;
-      var g = cityGroups[def.id];
-      var gp = g.position;
-      
-      // Distance-based visibility
-      var camDist = camera.position.distanceTo(gp);
-      var sc = toScreen(gp.x, gp.y + 12, gp.z);
-      
-      if (sc.behind || sc.x < -50 || sc.x > W+50 || sc.y < -50 || sc.y > H+50) {
-        el.classList.remove('vis'); return;
-      }
-      
-      el.style.left = sc.x + 'px';
-      el.style.top  = sc.y + 'px';
-      el.classList.add('vis');
-      
-      // Fade based on distance
-      var fade = Math.min(1, Math.max(0, (800 - camDist) / 200));
-      el.style.opacity = fade;
-      
-      // Show/hide city buildings vs dot based on distance
-      var grp = cityGroups[def.id];
-      grp.children.forEach(function(child) {
-        if (child.userData.isDot) {
-          child.visible = camDist > 200;
-        } else {
-          child.visible = camDist < 350;
-        }
-      });
+/* LOAD GLB */
+BABYLON.SceneLoader.ImportMesh("", "./", "scene.glb", scene,
+  function(meshes) {
+    console.log("GLB loaded:", meshes.length, "meshes");
+    meshes.forEach(function(m) {
+      m.receiveShadows = true;
+      try { sg.addShadowCaster(m, true); } catch(e) {}
     });
-    
-    // Compass needle
-    needle.style.transform = 'rotate(' + (-ctrl.theta) + 'rad)';
-    
-    // Zoom label
-    var zl = getZoomLevel();
-    if (zl !== zoomLabel.textContent) {
-      zoomLabel.textContent = zl;
-      zoomLabel.classList.add('on');
-      clearTimeout(zoomLabel._t);
-      zoomLabel._t = setTimeout(function(){ zoomLabel.classList.remove('on'); }, 1800);
-    }
+  },
+  null,
+  function(sc, msg, ex) {
+    console.error("GLB load error:", msg, ex);
   }
-  
-  renderer.render(scene, camera);
+);
+
+/* LABELS */
+var hud = document.getElementById("hud");
+var lblEls = {};
+ZONES.forEach(function(z) {
+  var c = CLANS[z.id];
+  if (!c) return;
+  var el = document.createElement("div");
+  el.className = "wl";
+  el.innerHTML = '<div class="wlb"><div class="wln">' + c.name + '</div><div class="wls">' + c.cat + '</div></div>';
+  el.addEventListener("click", function() { openPanel(z.id); });
+  hud.appendChild(el);
+  lblEls[z.id] = el;
+});
+
+function project(wx, wy, wz) {
+  var v = BABYLON.Vector3.Project(
+    new BABYLON.Vector3(wx, wy, wz),
+    BABYLON.Matrix.Identity(),
+    scene.getTransformMatrix(),
+    cam.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
+  );
+  return { x: v.x, y: v.y, behind: v.z > 1 };
 }
 
-animate();
+/* PANEL */
+var panel = document.getElementById("panel");
+function openPanel(id) {
+  var c = CLANS[id];
+  if (!c) return;
+  document.getElementById("pCat").textContent = c.cat;
+  document.getElementById("pTit").textContent = c.name;
+  document.getElementById("pAr").textContent = c.arabic;
+  document.getElementById("pDesc").textContent = c.desc;
+  document.getElementById("pRole").textContent = c.role;
+  document.getElementById("pTags").innerHTML = c.tags.map(function(t) {
+    return '<span class="p-tag">' + t + '</span>';
+  }).join("");
+  document.getElementById("pFigs").innerHTML = c.figs.map(function(f) {
+    return '<div class="p-fig"><div class="p-fn">' + f.n + '</div><div class="p-fd">' + f.d + '</div></div>';
+  }).join("");
+  panel.classList.add("open");
+}
+document.getElementById("pClose").addEventListener("click", function() {
+  panel.classList.remove("open");
+});
 
-// ============================================================
-// LOADING SEQUENCE
-// ============================================================
-var msgs = ['Raising the Hijaz mountains...','Filling the Rub al-Khali...','Placing the cities...','Drawing trade routes...','Opening the gates...'];
+/* MINIMAP */
+var mmCtx = document.getElementById("mmC").getContext("2d");
+var SC = 130 / 200;
+function drawMM() {
+  mmCtx.clearRect(0, 0, 130, 130);
+  mmCtx.fillStyle = "rgba(13,10,6,.92)";
+  mmCtx.fillRect(0, 0, 130, 130);
+  ZONES.forEach(function(z) {
+    var px = 65 + z.x * SC;
+    var py = 65 + z.z * SC;
+    mmCtx.strokeStyle = "rgba(212,168,67,.25)";
+    mmCtx.lineWidth = 1;
+    mmCtx.beginPath();
+    mmCtx.arc(px, py, z.r * SC, 0, Math.PI * 2);
+    mmCtx.stroke();
+  });
+  mmCtx.fillStyle = "#d4a843";
+  mmCtx.fillRect(62, 62, 6, 6);
+}
+
+/* ZONE CHECK */
+var curZ = null;
+var locEl = document.getElementById("loc");
+function checkZones() {
+  var px = cam.target.x;
+  var pz = cam.target.z;
+  var near = null;
+  var nd = Infinity;
+  ZONES.forEach(function(z) {
+    var d = Math.sqrt((px - z.x) * (px - z.x) + (pz - z.z) * (pz - z.z));
+    if (d < z.r && d < nd) { near = z; nd = d; }
+  });
+  if (near !== curZ) {
+    curZ = near;
+    if (near) {
+      locEl.textContent = CLANS[near.id].name;
+      locEl.classList.add("on");
+    } else {
+      locEl.classList.remove("on");
+    }
+  }
+}
+
+/* RENDER LOOP */
+var entered = false;
+var fc = 0;
+scene.registerAfterRender(function() {
+  if (!entered) return;
+  fc++;
+  ZONES.forEach(function(z) {
+    var el = lblEls[z.id];
+    if (!el) return;
+    if (!labelsOn) { el.classList.remove("vis"); return; }
+    var cp = cam.position;
+    var dist = Math.sqrt((cp.x - z.x) * (cp.x - z.x) + (cp.z - z.z) * (cp.z - z.z));
+    if (dist > 200) { el.classList.remove("vis"); return; }
+    var sc = project(z.x, z.ly || 8, z.z);
+    if (sc.behind || sc.x < 0 || sc.x > engine.getRenderWidth() || sc.y < 0 || sc.y > engine.getRenderHeight()) {
+      el.classList.remove("vis"); return;
+    }
+    el.style.left = sc.x + "px";
+    el.style.top = sc.y + "px";
+    el.classList.add("vis");
+    el.style.opacity = Math.min(1, (200 - dist) / 50);
+  });
+  if (fc % 3 !== 0) return;
+  document.getElementById("needle").style.transform = "rotate(" + (-(cam.alpha + Math.PI / 2)) + "rad)";
+  drawMM();
+  checkZones();
+});
+
+engine.runRenderLoop(function() { scene.render(); });
+window.addEventListener("resize", function() { engine.resize(); });
+
+/* LOADING */
+var msgs = ["Raising the desert...", "Placing the stones...", "Building the city...", "Lighting the sunset...", "Opening the gates..."];
 var prog = 0;
 var iv = setInterval(function() {
-  prog += Math.random() * 14 + 8;
+  prog += Math.random() * 16 + 7;
   if (prog >= 100) {
-    prog = 100; clearInterval(iv);
+    prog = 100;
+    clearInterval(iv);
     setTimeout(function() {
-      document.getElementById('ld').classList.add('out');
+      document.getElementById("ld").classList.add("out");
       setTimeout(function() {
-        document.getElementById('ld').style.display = 'none';
-        document.getElementById('intro').classList.add('on');
+        document.getElementById("ld").style.display = "none";
+        document.getElementById("intro").classList.add("on");
       }, 900);
-    }, 300);
+    }, 400);
   }
-  document.getElementById('ldBar').style.width = prog + '%';
-  document.getElementById('ldMsg').textContent = msgs[Math.min(Math.floor(prog/22), msgs.length-1)];
-}, 120);
+  document.getElementById("ldBar").style.width = prog + "%";
+  document.getElementById("ldMsg").textContent = msgs[Math.min(Math.floor(prog / 22), msgs.length - 1)];
+}, 160);
 
-document.getElementById('enterBtn').addEventListener('click', function() {
-  document.getElementById('intro').classList.remove('on');
-  setTimeout(function() { entered = true; }, 400);
+document.getElementById("enterBtn").addEventListener("click", function() {
+  document.getElementById("intro").classList.remove("on");
+  setTimeout(function() {
+    cam.attachControl(canvas, true);
+    entered = true;
+  }, 500);
+});
+
+/* ============================================================
+   BIRDS — Circling overhead
+   ============================================================ */
+var birds = [];
+var BIRD_COUNT = 18;
+
+var birdMat = new BABYLON.StandardMaterial("birdMat", scene);
+birdMat.diffuseColor = new BABYLON.Color3(0.12, 0.08, 0.05);
+birdMat.specularColor = BABYLON.Color3.Black();
+birdMat.emissiveColor = new BABYLON.Color3(0.06, 0.04, 0.02);
+
+for (var bi = 0; bi < BIRD_COUNT; bi++) {
+  var birdRoot = new BABYLON.TransformNode("bird_" + bi, scene);
+
+  var lwing = BABYLON.MeshBuilder.CreateDisc("blw_" + bi, {
+    radius: 0.5, tessellation: 3, sideOrientation: BABYLON.Mesh.DOUBLESIDE
+  }, scene);
+  lwing.material = birdMat;
+  lwing.parent = birdRoot;
+  lwing.rotation.x = Math.PI / 2;
+  lwing.rotation.z = 0.15;
+  lwing.position.x = -0.3;
+  lwing.scaling = new BABYLON.Vector3(1.2, 0.4, 1);
+
+  var rwing = BABYLON.MeshBuilder.CreateDisc("brw_" + bi, {
+    radius: 0.5, tessellation: 3, sideOrientation: BABYLON.Mesh.DOUBLESIDE
+  }, scene);
+  rwing.material = birdMat;
+  rwing.parent = birdRoot;
+  rwing.rotation.x = Math.PI / 2;
+  rwing.rotation.z = -0.15;
+  rwing.position.x = 0.3;
+  rwing.scaling = new BABYLON.Vector3(1.2, 0.4, 1);
+
+  var bbody = BABYLON.MeshBuilder.CreateCylinder("bbd_" + bi, {
+    diameter: 0.12, height: 0.6, tessellation: 4
+  }, scene);
+  bbody.material = birdMat;
+  bbody.parent = birdRoot;
+  bbody.rotation.z = Math.PI / 2;
+
+  var bRadius = 15 + Math.random() * 45;
+  var bHeight = 25 + Math.random() * 30;
+  var bSpeed = 0.15 + Math.random() * 0.25;
+  var bStartAngle = Math.random() * Math.PI * 2;
+  var bDir = (bi % 2 === 0) ? 1 : -1;
+  var bDrift = Math.random() * 0.3;
+  var bDriftSpd = 0.3 + Math.random() * 0.4;
+  var bBankAmount = 0.2 + Math.random() * 0.15;
+
+  birds.push({
+    root: birdRoot, lwing: lwing, rwing: rwing,
+    radius: bRadius, height: bHeight, speed: bSpeed,
+    angle: bStartAngle, dir: bDir, drift: bDrift,
+    driftSpd: bDriftSpd, bank: bBankAmount
+  });
+}
+
+/* ============================================================
+   DAY / NIGHT SYSTEM
+   Smoothly transitions all lighting, sky, fog, post-processing
+   ============================================================ */
+var isNight = false;
+var dnLerp = 0;       /* 0 = full day, 1 = full night */
+var dnTarget = 0;
+var dnSpeed = 0.6;     /* transition speed (takes ~1.7s) */
+
+/* Store day & night presets */
+var DAY = {
+  sunDir:      new BABYLON.Vector3(-0.4, -0.6, 0.2),
+  sunInt:      2.8,
+  sunDiffuse:  new BABYLON.Color3(1.0, 0.76, 0.38),
+  sunSpec:     new BABYLON.Color3(0.4, 0.25, 0.1),
+  hemiInt:     0.65,
+  hemiDiffuse: new BABYLON.Color3(0.85, 0.65, 0.42),
+  hemiGround:  new BABYLON.Color3(0.5, 0.32, 0.18),
+  fogColor:    new BABYLON.Color3(0.68, 0.48, 0.28),
+  fogStart:    80,
+  fogEnd:      250,
+  clearColor:  new BABYLON.Color4(0.58, 0.42, 0.24, 1),
+  exposure:    1.08,
+  contrast:    1.1,
+  bloomWeight: 0.22,
+  bloomThresh: 0.7,
+  shadowDark:  0.4,
+  shadowBias:  0.008,
+  vignetteWt:  1.8
+};
+
+var NIGHT = {
+  sunDir:      new BABYLON.Vector3(0.2, -0.7, -0.4),
+  sunInt:      1.2,
+  sunDiffuse:  new BABYLON.Color3(0.40, 0.45, 0.70),
+  sunSpec:     new BABYLON.Color3(0.12, 0.14, 0.25),
+  hemiInt:     0.35,
+  hemiDiffuse: new BABYLON.Color3(0.20, 0.22, 0.40),
+  hemiGround:  new BABYLON.Color3(0.08, 0.07, 0.15),
+  fogColor:    new BABYLON.Color3(0.06, 0.05, 0.12),
+  fogStart:    60,
+  fogEnd:      220,
+  clearColor:  new BABYLON.Color4(0.05, 0.04, 0.10, 1),
+  exposure:    1.0,
+  contrast:    1.15,
+  bloomWeight: 0.38,
+  bloomThresh: 0.5,
+  shadowDark:  0.65,
+  shadowBias:  0.01,
+  vignetteWt:  2.5
+};
+
+/* Night sky texture (stars + moon glow) */
+var nightSkyTex = new BABYLON.DynamicTexture("nightSkyTex", {width:256, height:256}, scene, false);
+var nightCtx = nightSkyTex.getContext();
+/* Deep night gradient */
+var ng = nightCtx.createLinearGradient(0, 256, 0, 0);
+ng.addColorStop(0, "#0a0812");
+ng.addColorStop(0.3, "#0c0a18");
+ng.addColorStop(0.6, "#101028");
+ng.addColorStop(0.85, "#0e0e22");
+ng.addColorStop(1, "#06050e");
+nightCtx.fillStyle = ng;
+nightCtx.fillRect(0, 0, 256, 256);
+/* Stars */
+nightCtx.fillStyle = "#ffffff";
+for (var si = 0; si < 120; si++) {
+  var sx2 = Math.random() * 256;
+  var sy2 = Math.random() * 200;
+  var sr = Math.random() * 1.2 + 0.3;
+  nightCtx.globalAlpha = Math.random() * 0.6 + 0.3;
+  nightCtx.beginPath();
+  nightCtx.arc(sx2, sy2, sr, 0, Math.PI * 2);
+  nightCtx.fill();
+}
+nightCtx.globalAlpha = 1;
+/* Moon glow */
+var moonG = nightCtx.createRadialGradient(190, 40, 0, 190, 40, 50);
+moonG.addColorStop(0, "rgba(220,225,255,0.95)");
+moonG.addColorStop(0.15, "rgba(180,190,230,0.5)");
+moonG.addColorStop(0.5, "rgba(100,110,180,0.15)");
+moonG.addColorStop(1, "rgba(50,50,100,0)");
+nightCtx.fillStyle = moonG;
+nightCtx.fillRect(0, 0, 256, 256);
+nightSkyTex.update();
+
+/* Keep reference to original day sky texture */
+var daySkyTex = skyTex;
+
+function lerpColor3(a, b, t) {
+  return new BABYLON.Color3(
+    a.r + (b.r - a.r) * t,
+    a.g + (b.g - a.g) * t,
+    a.b + (b.b - a.b) * t
+  );
+}
+function lerpColor4(a, b, t) {
+  return new BABYLON.Color4(
+    a.r + (b.r - a.r) * t,
+    a.g + (b.g - a.g) * t,
+    a.b + (b.b - a.b) * t,
+    1
+  );
+}
+function lerpVal(a, b, t) { return a + (b - a) * t; }
+
+function applyDayNight(t) {
+  /* Sun / moonlight direction and color */
+  sun.direction = BABYLON.Vector3.Lerp(DAY.sunDir, NIGHT.sunDir, t);
+  sun.intensity = lerpVal(DAY.sunInt, NIGHT.sunInt, t);
+  sun.diffuse = lerpColor3(DAY.sunDiffuse, NIGHT.sunDiffuse, t);
+  sun.specular = lerpColor3(DAY.sunSpec, NIGHT.sunSpec, t);
+
+  /* Hemisphere */
+  hemi.intensity = lerpVal(DAY.hemiInt, NIGHT.hemiInt, t);
+  hemi.diffuse = lerpColor3(DAY.hemiDiffuse, NIGHT.hemiDiffuse, t);
+  hemi.groundColor = lerpColor3(DAY.hemiGround, NIGHT.hemiGround, t);
+
+  /* Fog */
+  scene.fogColor = lerpColor3(DAY.fogColor, NIGHT.fogColor, t);
+  scene.fogStart = lerpVal(DAY.fogStart, NIGHT.fogStart, t);
+  scene.fogEnd = lerpVal(DAY.fogEnd, NIGHT.fogEnd, t);
+
+  /* Clear color */
+  scene.clearColor = lerpColor4(DAY.clearColor, NIGHT.clearColor, t);
+
+  /* Post-processing */
+  pp.imageProcessing.exposure = lerpVal(DAY.exposure, NIGHT.exposure, t);
+  pp.imageProcessing.contrast = lerpVal(DAY.contrast, NIGHT.contrast, t);
+  pp.bloomWeight = lerpVal(DAY.bloomWeight, NIGHT.bloomWeight, t);
+  pp.bloomThreshold = lerpVal(DAY.bloomThresh, NIGHT.bloomThresh, t);
+  pp.imageProcessing.vignetteWeight = lerpVal(DAY.vignetteWt, NIGHT.vignetteWt, t);
+
+  /* Shadows — always on, just change darkness and bias */
+  sg.setDarkness(lerpVal(DAY.shadowDark, NIGHT.shadowDark, t));
+  sg.bias = lerpVal(DAY.shadowBias, NIGHT.shadowBias, t);
+
+  /* Sky texture crossfade — swap at midpoint */
+  if (t < 0.5) {
+    skyMat.emissiveTexture = daySkyTex;
+  } else {
+    skyMat.emissiveTexture = nightSkyTex;
+  }
+
+  /* Bird visibility — fewer visible at night */
+  for (var bv = 0; bv < birds.length; bv++) {
+    birds[bv].root.setEnabled(t < 0.7 || bv < 4);
+  }
+}
+
+/* Toggle button */
+var toggleBtn = document.getElementById("dnToggle");
+toggleBtn.addEventListener("click", function() {
+  isNight = !isNight;
+  dnTarget = isNight ? 1 : 0;
+  toggleBtn.className = isNight ? "night" : "day";
+  toggleBtn.querySelector(".dn-thumb").textContent = isNight ? "☽" : "☀";
+});
+
+/* Labels toggle */
+var labelsOn = true;
+var lblToggleBtn = document.getElementById("lblToggle");
+lblToggleBtn.addEventListener("click", function() {
+  labelsOn = !labelsOn;
+  lblToggleBtn.className = labelsOn ? "on" : "off";
+  /* Immediately show/hide all labels */
+  Object.keys(lblEls).forEach(function(k) {
+    if (!labelsOn) {
+      lblEls[k].style.display = "none";
+    } else {
+      lblEls[k].style.display = "";
+    }
+  });
+});
+
+/* ============================================================
+   ANIMATION LOOP — birds + day/night transition
+   ============================================================ */
+var animTime = 0;
+scene.registerBeforeRender(function() {
+  if (!entered) return;
+  var dt = engine.getDeltaTime() / 1000;
+  animTime += dt;
+
+  /* --- Day/Night smooth transition --- */
+  if (Math.abs(dnLerp - dnTarget) > 0.001) {
+    if (dnLerp < dnTarget) {
+      dnLerp = Math.min(dnLerp + dnSpeed * dt, dnTarget);
+    } else {
+      dnLerp = Math.max(dnLerp - dnSpeed * dt, dnTarget);
+    }
+    /* Ease in-out curve */
+    var eased = dnLerp * dnLerp * (3 - 2 * dnLerp);
+    applyDayNight(eased);
+  }
+
+  /* --- Animate Birds --- */
+  for (var j = 0; j < birds.length; j++) {
+    var b = birds[j];
+    if (!b.root.isEnabled()) continue;
+    b.angle += b.speed * dt * b.dir;
+
+    var bx = Math.cos(b.angle) * b.radius;
+    var bz = Math.sin(b.angle) * b.radius;
+    var by = b.height + Math.sin(animTime * b.driftSpd) * b.drift;
+
+    b.root.position.x = bx;
+    b.root.position.z = bz;
+    b.root.position.y = by;
+
+    var bfacing = b.angle + (b.dir > 0 ? Math.PI / 2 : -Math.PI / 2);
+    b.root.rotation.y = -bfacing;
+    b.root.rotation.z = b.bank * b.dir;
+
+    var flapAngle = Math.sin(animTime * 1.8 + j * 2) * 0.25;
+    b.lwing.rotation.z = 0.15 + flapAngle;
+    b.rwing.rotation.z = -0.15 - flapAngle;
+  }
 });
 </script>
 </body>
