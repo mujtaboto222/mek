@@ -213,21 +213,14 @@ sun.intensity = 2.8;
 sun.diffuse = new BABYLON.Color3(1.0, 0.76, 0.38);
 sun.specular = new BABYLON.Color3(0.4, 0.25, 0.1);
 
-var sg = new BABYLON.ShadowGenerator(1024, sun);
-sg.usePercentageCloserFiltering = true;
-sg.filteringQuality = BABYLON.ShadowGenerator.QUALITY_MEDIUM;
-sg.setDarkness(0.4);
-sg.bias = 0.008;
-sg.normalBias = 0.02;
-sun.shadowMinZ = 1;
-sun.shadowMaxZ = 300;
-sun.autoUpdateExtends = true;
-sun.autoCalcShadowZBounds = true;
-
+/* Shadows removed for performance — boosted ambient fill compensates */
 var hemi = new BABYLON.HemisphericLight("h", new BABYLON.Vector3(0, 1, 0), scene);
-hemi.intensity = 0.65;
-hemi.diffuse = new BABYLON.Color3(0.85, 0.65, 0.42);
-hemi.groundColor = new BABYLON.Color3(0.5, 0.32, 0.18);
+hemi.intensity = 0.9;
+hemi.diffuse = new BABYLON.Color3(0.92, 0.72, 0.48);
+hemi.groundColor = new BABYLON.Color3(0.6, 0.40, 0.22);
+
+/* Stub so DAY/NIGHT references to sg don't throw */
+var sg = { setDarkness: function(){}, bias: 0 };
 
 /* SKY */
 var sky = BABYLON.MeshBuilder.CreateSphere("sky", {diameter:580, sideOrientation:BABYLON.Mesh.BACKSIDE, segments:8}, scene);
@@ -262,13 +255,13 @@ scene.fogColor = new BABYLON.Color3(0.68, 0.48, 0.28);
 scene.fogStart = 80;
 scene.fogEnd = 250;
 
-/* POST-PROCESS */
+/* POST-PROCESS — FXAA removed (expensive full-screen pass); bloom kept subtle */
 var pp = new BABYLON.DefaultRenderingPipeline("pp", false, scene, [cam]);
-pp.fxaaEnabled = true;
+pp.fxaaEnabled = false;
 pp.bloomEnabled = true;
-pp.bloomThreshold = 0.7;
-pp.bloomWeight = 0.22;
-pp.bloomKernel = 32;
+pp.bloomThreshold = 0.82;
+pp.bloomWeight = 0.14;
+pp.bloomKernel = 16;
 pp.imageProcessingEnabled = true;
 pp.imageProcessing.contrast = 1.1;
 pp.imageProcessing.exposure = 1.08;
@@ -281,8 +274,8 @@ BABYLON.SceneLoader.ImportMesh("", "./", "scene.glb", scene,
   function(meshes) {
     console.log("GLB loaded:", meshes.length, "meshes");
     meshes.forEach(function(m) {
-      m.receiveShadows = true;
-      try { sg.addShadowCaster(m, true); } catch(e) {}
+      m.receiveShadows = false;
+      m.isPickable = false;
     });
   },
   null,
@@ -386,22 +379,29 @@ var fc = 0;
 scene.registerAfterRender(function() {
   if (!entered) return;
   fc++;
-  ZONES.forEach(function(z) {
-    var el = lblEls[z.id];
-    if (!el) return;
-    if (!labelsOn) { el.classList.remove("vis"); return; }
-    var cp = cam.position;
-    var dist = Math.sqrt((cp.x - z.x) * (cp.x - z.x) + (cp.z - z.z) * (cp.z - z.z));
-    if (dist > 200) { el.classList.remove("vis"); return; }
-    var sc = project(z.x, z.ly || 8, z.z);
-    if (sc.behind || sc.x < 0 || sc.x > engine.getRenderWidth() || sc.y < 0 || sc.y > engine.getRenderHeight()) {
-      el.classList.remove("vis"); return;
-    }
-    el.style.left = sc.x + "px";
-    el.style.top = sc.y + "px";
-    el.classList.add("vis");
-    el.style.opacity = Math.min(1, (200 - dist) / 50);
-  });
+
+  /* Labels — recompute projection every 2nd frame */
+  if (fc % 2 === 0) {
+    var rw = engine.getRenderWidth();
+    var rh = engine.getRenderHeight();
+    ZONES.forEach(function(z) {
+      var el = lblEls[z.id];
+      if (!el) return;
+      if (!labelsOn) { el.classList.remove("vis"); return; }
+      var cp = cam.position;
+      var dist = Math.sqrt((cp.x - z.x) * (cp.x - z.x) + (cp.z - z.z) * (cp.z - z.z));
+      if (dist > 200) { el.classList.remove("vis"); return; }
+      var sc = project(z.x, z.ly || 8, z.z);
+      if (sc.behind || sc.x < 0 || sc.x > rw || sc.y < 0 || sc.y > rh) {
+        el.classList.remove("vis"); return;
+      }
+      el.style.left = sc.x + "px";
+      el.style.top = sc.y + "px";
+      el.classList.add("vis");
+      el.style.opacity = Math.min(1, (200 - dist) / 50);
+    });
+  }
+
   if (fc % 3 !== 0) return;
   document.getElementById("needle").style.transform = "rotate(" + (-(cam.alpha + Math.PI / 2)) + "rad)";
   drawMM();
@@ -443,7 +443,7 @@ document.getElementById("enterBtn").addEventListener("click", function() {
    BIRDS — Circling overhead
    ============================================================ */
 var birds = [];
-var BIRD_COUNT = 18;
+var BIRD_COUNT = 8;
 
 var birdMat = new BABYLON.StandardMaterial("birdMat", scene);
 birdMat.diffuseColor = new BABYLON.Color3(0.12, 0.08, 0.05);
@@ -512,19 +512,19 @@ var DAY = {
   sunInt:      2.8,
   sunDiffuse:  new BABYLON.Color3(1.0, 0.76, 0.38),
   sunSpec:     new BABYLON.Color3(0.4, 0.25, 0.1),
-  hemiInt:     0.65,
-  hemiDiffuse: new BABYLON.Color3(0.85, 0.65, 0.42),
-  hemiGround:  new BABYLON.Color3(0.5, 0.32, 0.18),
+  hemiInt:     0.9,
+  hemiDiffuse: new BABYLON.Color3(0.92, 0.72, 0.48),
+  hemiGround:  new BABYLON.Color3(0.60, 0.40, 0.22),
   fogColor:    new BABYLON.Color3(0.68, 0.48, 0.28),
   fogStart:    80,
   fogEnd:      250,
   clearColor:  new BABYLON.Color4(0.58, 0.42, 0.24, 1),
   exposure:    1.08,
   contrast:    1.1,
-  bloomWeight: 0.22,
-  bloomThresh: 0.7,
-  shadowDark:  0.4,
-  shadowBias:  0.008,
+  bloomWeight: 0.14,
+  bloomThresh: 0.82,
+  shadowDark:  0,
+  shadowBias:  0,
   vignetteWt:  1.8
 };
 
@@ -533,19 +533,19 @@ var NIGHT = {
   sunInt:      1.2,
   sunDiffuse:  new BABYLON.Color3(0.40, 0.45, 0.70),
   sunSpec:     new BABYLON.Color3(0.12, 0.14, 0.25),
-  hemiInt:     0.35,
-  hemiDiffuse: new BABYLON.Color3(0.20, 0.22, 0.40),
-  hemiGround:  new BABYLON.Color3(0.08, 0.07, 0.15),
+  hemiInt:     0.45,
+  hemiDiffuse: new BABYLON.Color3(0.24, 0.26, 0.45),
+  hemiGround:  new BABYLON.Color3(0.10, 0.09, 0.18),
   fogColor:    new BABYLON.Color3(0.06, 0.05, 0.12),
   fogStart:    60,
   fogEnd:      220,
   clearColor:  new BABYLON.Color4(0.05, 0.04, 0.10, 1),
   exposure:    1.0,
   contrast:    1.15,
-  bloomWeight: 0.38,
-  bloomThresh: 0.5,
-  shadowDark:  0.65,
-  shadowBias:  0.01,
+  bloomWeight: 0.28,
+  bloomThresh: 0.55,
+  shadowDark:  0,
+  shadowBias:  0,
   vignetteWt:  2.5
 };
 
@@ -676,6 +676,7 @@ lblToggleBtn.addEventListener("click", function() {
    ANIMATION LOOP — birds + day/night transition
    ============================================================ */
 var animTime = 0;
+var animFrame = 0;
 scene.registerBeforeRender(function() {
   if (!entered) return;
   var dt = engine.getDeltaTime() / 1000;
@@ -693,28 +694,31 @@ scene.registerBeforeRender(function() {
     applyDayNight(eased);
   }
 
-  /* --- Animate Birds --- */
-  for (var j = 0; j < birds.length; j++) {
-    var b = birds[j];
-    if (!b.root.isEnabled()) continue;
-    b.angle += b.speed * dt * b.dir;
+  /* --- Animate Birds — every 2nd frame --- */
+  if (animFrame % 2 === 0) {
+    for (var j = 0; j < birds.length; j++) {
+      var b = birds[j];
+      if (!b.root.isEnabled()) continue;
+      b.angle += b.speed * dt * b.dir * 2; /* compensate for skipped frame */
 
-    var bx = Math.cos(b.angle) * b.radius;
-    var bz = Math.sin(b.angle) * b.radius;
-    var by = b.height + Math.sin(animTime * b.driftSpd) * b.drift;
+      var bx = Math.cos(b.angle) * b.radius;
+      var bz = Math.sin(b.angle) * b.radius;
+      var by = b.height + Math.sin(animTime * b.driftSpd) * b.drift;
 
-    b.root.position.x = bx;
-    b.root.position.z = bz;
-    b.root.position.y = by;
+      b.root.position.x = bx;
+      b.root.position.z = bz;
+      b.root.position.y = by;
 
-    var bfacing = b.angle + (b.dir > 0 ? Math.PI / 2 : -Math.PI / 2);
-    b.root.rotation.y = -bfacing;
-    b.root.rotation.z = b.bank * b.dir;
+      var bfacing = b.angle + (b.dir > 0 ? Math.PI / 2 : -Math.PI / 2);
+      b.root.rotation.y = -bfacing;
+      b.root.rotation.z = b.bank * b.dir;
 
-    var flapAngle = Math.sin(animTime * 1.8 + j * 2) * 0.25;
-    b.lwing.rotation.z = 0.15 + flapAngle;
-    b.rwing.rotation.z = -0.15 - flapAngle;
+      var flapAngle = Math.sin(animTime * 1.8 + j * 2) * 0.25;
+      b.lwing.rotation.z = 0.15 + flapAngle;
+      b.rwing.rotation.z = -0.15 - flapAngle;
+    }
   }
+  animFrame++;
 });
 </script>
 </body>
